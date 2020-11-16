@@ -1,0 +1,5 @@
+rootProject.name = 'system'
+
+include 'domain'
+include 'client'
+include 'service'
