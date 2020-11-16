@@ -19,11 +19,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
-	/*@Bean
-	public CairoJwtAuthenticationConverter cairoJwtAuthenticationConverter(AuthenticationBasicClient authenticationBasicClient) {
-		return new CairoJwtAuthenticationConverter(authenticationBasicClient);
-	}*/
-
 	@Configuration
 	@EnableWebSecurity
 	public static class CairoWebSecurityConfiguration extends WebSecurityConfigurerAdapter {
