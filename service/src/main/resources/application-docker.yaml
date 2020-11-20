@@ -45,4 +45,4 @@ logging:
   level:
     com.hfhk: debug
   file:
-    name: /hfhk/cairo/service/system/logs/hfhk.log
+    name: /hfhk/cairo/system/service/logs/hfhk.log
