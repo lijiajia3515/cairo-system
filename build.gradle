@@ -27,7 +27,7 @@ plugins {
 allprojects {
   apply from: "${rootDir}/gradle/repositories.gradle"
 
-  group = 'com.hfhk.cairo.system'
+  group = 'com.hfhk.cairo'
 
   tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"

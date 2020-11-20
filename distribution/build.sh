@@ -1,2 +1,2 @@
-docker build -t registry.cn-beijing.aliyuncs.com/hfhksoft/cairo-system-service:snapshot -f service/Dockerfile ./service
+docker build -t registry.cn-beijing.aliyuncs.com/hfhksoft/cairo-system-service:snapshot -f system-service/Dockerfile ./system-service
 docker push registry.cn-beijing.aliyuncs.com/hfhksoft/cairo-system-service:snapshot
