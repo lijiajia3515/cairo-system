@@ -1,4 +1,4 @@
 dependencies {
-  compile "com.hfhk.cairo.auth:domain:${cairoVersion}"
+  compile "com.hfhk.cairo:auth-domain:${cairoVersion}"
 
 }
