@@ -2,6 +2,8 @@ plugins {
   id 'org.springframework.boot'
 }
 
+apply from: "${rootDir}/gradle/devtools.gradle"
+
 dependencies {
   annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
@@ -41,6 +43,8 @@ dependencies {
   implementation project(':system-domain')
   implementation "com.hfhk.cairo:auth-client:${cairoVersion}"
 
+  compile 'io.minio:minio:3.0.10'
+
   // test
   // testImplementation('org.springframework.boot:spring-boot-starter-test') {
   //  exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -53,9 +57,3 @@ dependencies {
 bootJar {
   archiveFileName = "app.${archiveExtension.get()}"
 }
-
-// disable publish
-generateMetadataFileForMavenJavaPublication.enabled = false
-generatePomFileForMavenJavaPublication.enabled = false
-publishMavenJavaPublicationToMavenRepository.enabled = false
-publish.enabled = false

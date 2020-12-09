@@ -23,14 +23,14 @@ publishing {
       from components.java
 
       pom {
-        name = "Cairo"
+        name = "Cairo-System"
         packaging = "jar"
-        url = "https://codeup.aliyun.com/harpoon/cairo/cairo"
+        url = "https://codeup.aliyun.com/harpoon/cairo/system"
 
         scm {
-          url = "https://codeup.aliyun.com/harpoon/cairo/cairo"
-          connection = "scm:git:git://codeup.aliyun.com/harpoon/cairo/cairo"
-          developerConnection = "scm:git:git://codeup.aliyun.com/harpoon/cairo/cairo"
+          url = "https://codeup.aliyun.com/harpoon/cairo/system"
+          connection = "scm:git:git://codeup.aliyun.com/harpoon/cairo/system"
+          developerConnection = "scm:git:git://codeup.aliyun.com/harpoon/cairo/system"
         }
 
         issueManagement {
@@ -74,8 +74,4 @@ publishing {
 //signing {
 //  sign publishing.publications.mavenJava
 //}
-javadoc {
-  if (JavaVersion.current().isJava9Compatible()) {
-    options.addBooleanOption('html5', true)
-  }
-}
+
