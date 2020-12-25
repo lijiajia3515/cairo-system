@@ -8,6 +8,7 @@ dependencies {
   annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
   // actuator
+  implementation "org.springframework.boot:spring-boot-starter"
   implementation "org.springframework.boot:spring-boot-starter-actuator"
 
   // data
@@ -37,20 +38,22 @@ dependencies {
 
   // cairo
   implementation "com.hfhk.cairo.starter:mongo:${cairoVersion}"
-  implementation "com.hfhk.cairo.starter:web:${cairoVersion}"
   implementation "com.hfhk.cairo.starter:service:${cairoVersion}"
 
+  // system
   implementation project(':system-domain')
-  implementation "com.hfhk.cairo:auth-client:${cairoVersion}"
 
-  compile 'io.minio:minio:3.0.10'
+
+  implementation 'io.minio:minio:3.0.10'
 
   // test
-  // testImplementation('org.springframework.boot:spring-boot-starter-test') {
-  //  exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-  // }
-  // testImplementation 'io.projectreactor:reactor-test'
-  // testImplementation 'org.springframework.security:spring-security-test'
+  testImplementation('org.springframework.boot:spring-boot-starter-test')
+  testImplementation 'io.projectreactor:reactor-test'
+  testImplementation 'org.springframework.security:spring-security-test'
+
+}
+
+test {
 
 }
 
