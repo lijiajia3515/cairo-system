@@ -1,12 +1,10 @@
-package com.hfhk.system.service.modules.file.service.impl;
+package com.hfhk.system.service.modules.file;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.system.file.domain.Folder;
-import com.hfhk.system.file.domain.request.FolderPageFindRequest;
+import com.hfhk.system.file.domain.request.FolderPageFindParams;
 import com.hfhk.system.file.util.FolderUtil;
 import com.hfhk.system.service.domain.mongo.FolderMongo;
-import com.hfhk.system.service.modules.file.service.FolderService;
-import com.hfhk.system.service.modules.file.service.converter.FolderConverter;
 import com.mongodb.client.result.DeleteResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -31,7 +29,7 @@ public class FolderServiceImpl implements FolderService {
 	}
 
 	@Override
-	public Page<String> pageFind(String client, FolderPageFindRequest request) {
+	public Page<String> pageFind(String client, FolderPageFindParams request) {
 		final Query query = Query.query(Criteria.where("client").is(client).and("_id").regex(request.getPath()));
 		query.fields().include("path");
 		long total = mongoTemplate.count(query, FolderMongo.class);

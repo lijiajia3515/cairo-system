@@ -1,4 +1,4 @@
-package com.hfhk.system.service.modules.file.service.converter;
+package com.hfhk.system.service.modules.file;
 
 import com.hfhk.cairo.core.tree.TreeConverter;
 import com.hfhk.system.file.domain.Folder;

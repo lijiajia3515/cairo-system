@@ -15,7 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FolderPageFindRequest implements Serializable {
+public class FolderPageFindParams implements Serializable {
 	@Builder.Default
 	private PageRequest page = new PageRequest();
 

@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * dictionary save request
+ * dictionary delete request
  */
 @Data
 @Accessors(chain = true)
@@ -18,15 +18,11 @@ import java.util.Collection;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DictionaryItemDeleteRequest implements Serializable {
+public class DictionaryDeleteParams implements Serializable {
 
 	/**
-	 * code
+	 * codes
 	 */
-	private String code;
+	private Collection<String> codes;
 
-	/**
-	 * name
-	 */
-	private Collection<String> itemCodes;
 }

@@ -7,11 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
- * dictionary save request
+ * 字典 刷新 值
  */
 @Data
 @Accessors(chain = true)
@@ -19,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DictionarySaveRequest implements Serializable {
+public class DictionaryItemPutParams {
 
 	/**
 	 * code
@@ -27,12 +26,8 @@ public class DictionarySaveRequest implements Serializable {
 	private String code;
 
 	/**
-	 * name
-	 */
-	private String name;
-
-	/**
-	 * values
+	 * 项
 	 */
 	private List<Dictionary.Item> items;
+
 }

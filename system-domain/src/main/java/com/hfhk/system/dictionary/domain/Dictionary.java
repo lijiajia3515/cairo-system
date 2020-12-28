@@ -45,9 +45,15 @@ public class Dictionary implements Serializable {
 		 * code
 		 */
 		private String code;
+
 		/**
 		 * value
 		 */
 		private Object value;
+
+		/**
+		 * name
+		 */
+		private String name;
 	}
 }

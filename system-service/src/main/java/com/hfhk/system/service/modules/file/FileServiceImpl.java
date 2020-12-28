@@ -1,4 +1,4 @@
-package com.hfhk.system.service.modules.file.service.impl;
+package com.hfhk.system.service.modules.file;
 
 import com.hfhk.auth.client.UserOAuthClientCredentialsClient;
 import com.hfhk.auth.domain.Metadata;
@@ -6,9 +6,10 @@ import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.mongo.data.Created;
 import com.hfhk.cairo.mongo.data.LastModified;
 import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.request.FilePageFindRequest;
+import com.hfhk.system.file.domain.request.FileFindParams;
+import com.hfhk.system.file.domain.request.FilePageFindParams;
+import com.hfhk.system.service.constants.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.FileMongo;
-import com.hfhk.system.service.modules.file.service.FileService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -33,13 +34,18 @@ import java.util.stream.Stream;
 @Service
 public class FileServiceImpl implements FileService {
 
+	private final HfhkMongoProperties mongoProperties;
 	private final MongoTemplate mongoTemplate;
 
 	private final GridFsTemplate gridFsTemplate;
 
 	private final UserOAuthClientCredentialsClient userClient;
 
-	public FileServiceImpl(MongoTemplate mongoTemplate, GridFsTemplate gridFsTemplate, UserOAuthClientCredentialsClient userClient) {
+	public FileServiceImpl(HfhkMongoProperties mongoProperties,
+						   MongoTemplate mongoTemplate,
+						   GridFsTemplate gridFsTemplate,
+						   UserOAuthClientCredentialsClient userClient) {
+		this.mongoProperties = mongoProperties;
 		this.mongoTemplate = mongoTemplate;
 		this.gridFsTemplate = gridFsTemplate;
 		this.userClient = userClient;
@@ -58,13 +64,13 @@ public class FileServiceImpl implements FileService {
 
 				try (InputStream in = file.getInputStream()) {
 					String id = gridFsTemplate.store(in, filename, contentType, null).toString();
-					Query query = Query.query(Criteria.where("_id").is(id));
+					Query query = Query.query(Criteria.where(FileMongo.FIELD._ID).is(id));
 					Update update = new Update()
-						.set("client", client)
-						.set("folderPath", folderPath)
-						.set("metadata.created", created)
+						.set(FileMongo.FIELD.CLIENT, client)
+						.set(FileMongo.FIELD.FOLDER_PATH, folderPath)
+						.set(FileMongo.FIELD.METADATA.CREATED.SELF, created)
 						.set("metadata.lastModified", lastModified);
-					mongoTemplate.updateFirst(query, update, FileMongo.class);
+					mongoTemplate.updateFirst(query, update, FileMongo.class, mongoProperties.Collection.File);
 					return Optional.ofNullable(mongoTemplate.findById(id, FileMongo.class))
 						.flatMap(this::optionalFile).stream();
 				} catch (IOException e) {
@@ -89,17 +95,23 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public List<File> find(String client, String filepath, String filename) {
-		Criteria criteria = Criteria.where("client").is(client);
+	public List<File> find(String client, FileFindParams params) {
+		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
+		Optional.ofNullable(params)
+			.ifPresent(x -> {
+				Optional.ofNullable(x.getFilepath()).ifPresent(y -> criteria.and(FileMongo.FIELD.FOLDER_PATH).regex(y));
+				Optional.ofNullable(x.getFilename()).ifPresent(y -> criteria.and(FileMongo.FIELD.FILENAME).regex(y));
+			});
 
-		Optional.ofNullable(filepath).ifPresent(x -> criteria.and("folderPath").regex(x));
-		Optional.ofNullable(filename).ifPresent(x -> criteria.and("filename").regex(x));
 		Query query = Query.query(criteria);
-		return mongoTemplate.find(query, FileMongo.class).stream().flatMap(x -> optionalFile(x).stream()).collect(Collectors.toList());
+		return mongoTemplate.find(query, FileMongo.class, mongoProperties.Collection.File)
+			.stream()
+			.flatMap(x -> optionalFile(x).stream())
+			.collect(Collectors.toList());
 	}
 
 	@Override
-	public Page<File> pageFind(String client, FilePageFindRequest request) {
+	public Page<File> pageFind(String client, FilePageFindParams request) {
 		Criteria criteria = Criteria.where("client").is(client);
 
 		Optional.ofNullable(request.getFilepath()).ifPresent(x -> criteria.and("folderPath").regex(x));

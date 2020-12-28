@@ -73,7 +73,16 @@ spring:
         group: ${hfhk.nacos.discovery.group:${hfhk.nacos.group:hfhk}}
         metadata:
           version: v1
-
+    consul:
+      host: ${hfhk.consul.host:localhost}
+      port: ${hfhk.consul.port:8500}
+      discovery:
+        prefer-ip-address: true
+        health-check-interval: 5s
+        instance-zone: hfhk
+        instance-group: hfhk
+        tags:
+          - v1
 logging:
   level:
     root: info
@@ -100,7 +109,7 @@ security:
 
 feign:
   hystrix:
-    enabled: false
+    enabled: true
   okhttp:
     enabled: true
   httpclient:
@@ -113,9 +122,23 @@ feign:
     config:
       default:
         logger-level: FULL
+      serviceAuthV1AuthenticationBasicClient:
+        logger-level: FULL
+        request-interceptors:
+          - com.hfhk.cairo.feign.interceptor.BasicRequestInterceptor
+      serviceAuthV1UserOAuthClientCredentialsClient:
+        logger-level: FULL
+        request-interceptors:
+          - com.hfhk.cairo.feign.interceptor.ClientOAuth2RequestInterceptor
+      serviceSystemV1FileRequestClient:
+        logger-level: FULL
+        request-interceptors:
+          - com.hfhk.cairo.feign.interceptor.RequestOAuth2RequestInterceptor
+
 
 management:
   endpoints:
     web:
       exposure:
         include: "*"
+

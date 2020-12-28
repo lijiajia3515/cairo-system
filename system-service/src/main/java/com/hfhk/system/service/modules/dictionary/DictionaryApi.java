@@ -1,17 +1,14 @@
 package com.hfhk.system.service.modules.dictionary;
 
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
-import com.hfhk.cairo.starter.service.web.handler.BusinessResult;
 import com.hfhk.system.dictionary.domain.Dictionary;
-import com.hfhk.system.service.modules.dictionary.domain.request.DictionaryItemDeleteRequest;
-import com.hfhk.system.service.modules.dictionary.domain.request.DictionaryItemModifyRequest;
-import com.hfhk.system.service.modules.dictionary.domain.request.DictionaryItemPutRequest;
-import com.hfhk.system.service.modules.dictionary.domain.request.DictionarySaveRequest;
+import com.hfhk.system.service.modules.dictionary.domain.request.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,6 +24,14 @@ public class DictionaryApi {
 		this.dictionaryService = dictionaryService;
 	}
 
+	@PostMapping("/Find")
+	@PreAuthorize("isAuthenticated()")
+	public List<Dictionary> list(@AuthenticationPrincipal AuthPrincipal principal,
+								 @RequestBody(required = false) DictionaryFindParams request) {
+		String client = principal.getClient();
+		return dictionaryService.find(client, request);
+	}
+
 	/**
 	 * dictionary save
 	 *
@@ -36,11 +41,11 @@ public class DictionaryApi {
 	 */
 	@PostMapping("/Save")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public Optional<Dictionary> save(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody DictionarySaveRequest request) {
-		return dictionaryService.save(request);
+		@RequestBody DictionarySaveParams request) {
+		String client = principal.getClient();
+		return dictionaryService.save(client, request);
 	}
 
 	/**
@@ -52,28 +57,27 @@ public class DictionaryApi {
 	 */
 	@PutMapping("/Modify")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public Optional<Dictionary> modify(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody DictionarySaveRequest request) {
-		return dictionaryService.modify(request);
+		@RequestBody DictionarySaveParams request) {
+		String client = principal.getClient();
+		return dictionaryService.modify(client, request);
 	}
 
 	/**
 	 * dictionary delete
 	 *
 	 * @param principal principal
-	 * @param code      code
-	 * @return dictionary optional
+	 * @param params    params
+	 * @return dictionary
 	 */
 	@DeleteMapping("/Delete")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
-	public Optional<Dictionary> delete(
+	public List<Dictionary> delete(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody String code
-	) {
-		return dictionaryService.delete(code);
+		@RequestBody DictionaryDeleteParams params) {
+		String client = principal.getClient();
+		return dictionaryService.delete(client, params);
 	}
 
 	/**
@@ -85,10 +89,10 @@ public class DictionaryApi {
 	 */
 	@PutMapping("/Item/Put")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public Optional<Dictionary> putItems(@AuthenticationPrincipal AuthPrincipal principal,
-										 @RequestBody DictionaryItemPutRequest request) {
-		return dictionaryService.putItems(request);
+										 @RequestBody DictionaryItemPutParams request) {
+		String client = principal.getClient();
+		return dictionaryService.putItems(client, request);
 	}
 
 	/**
@@ -100,10 +104,10 @@ public class DictionaryApi {
 	 */
 	@PutMapping("/Item/Modify")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public Optional<Dictionary> modifyItems(@AuthenticationPrincipal AuthPrincipal principal,
-											@RequestBody DictionaryItemModifyRequest request) {
-		return dictionaryService.modifyItems(request);
+											@RequestBody DictionaryItemModifyParams request) {
+		String client = principal.getClient();
+		return dictionaryService.modifyItems(client, request);
 	}
 
 	/**
@@ -115,9 +119,9 @@ public class DictionaryApi {
 	 */
 	@DeleteMapping("/Item/Delete")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public Optional<Dictionary> deleteItems(@AuthenticationPrincipal AuthPrincipal principal,
-											@RequestBody DictionaryItemDeleteRequest request) {
-		return dictionaryService.deleteItems(request);
+											@RequestBody DictionaryItemDeleteParams request) {
+		String client = principal.getClient();
+		return dictionaryService.deleteItems(client, request);
 	}
 }

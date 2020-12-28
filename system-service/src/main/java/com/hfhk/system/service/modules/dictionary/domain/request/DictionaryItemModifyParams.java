@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DictionaryItemModifyRequest {
+public class DictionaryItemModifyParams {
 
 	/**
 	 * code

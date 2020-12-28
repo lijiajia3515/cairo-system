@@ -1,13 +1,13 @@
-package com.hfhk.system.service.modules.file.endpoint.api;
+package com.hfhk.system.service.modules.file;
 
 import cn.hutool.core.net.URLEncoder;
-import cn.hutool.core.util.IdUtil;
+import com.hfhk.cairo.core.Constants;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.cairo.starter.service.web.handler.BusinessResult;
 import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.request.FilePageFindRequest;
-import com.hfhk.system.service.modules.file.service.FileService;
+import com.hfhk.system.file.domain.request.FileFindParams;
+import com.hfhk.system.file.domain.request.FilePageFindParams;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.http.HttpHeaders;
@@ -27,8 +27,9 @@ import java.util.List;
  * 文件api
  */
 @RestController
-@RequestMapping("/file")
+@RequestMapping("/File")
 public class FileApi {
+
 	private final FileService fileService;
 
 	public FileApi(FileService fileService) {
@@ -43,7 +44,7 @@ public class FileApi {
 	 * @param files      文件
 	 * @return 1
 	 */
-	@PostMapping("/upload")
+	@PostMapping("/Upload")
 	@PreAuthorize("isAuthenticated()")
 	@BusinessResult
 	public List<File> upload(@AuthenticationPrincipal AuthPrincipal principal,
@@ -58,12 +59,12 @@ public class FileApi {
 	 * @param files 文件
 	 * @return x
 	 */
-	@PostMapping("/upload_temporary")
+	@PostMapping("/UploadTemporary")
 	@PermitAll
 	@BusinessResult
 	public List<File> temporaryUpload(
 		@RequestPart Collection<MultipartFile> files) {
-		String folderPath = "/temporary/" + IdUtil.fastSimpleUUID();
+		String folderPath = "/temporary/".concat(Constants.SNOWFLAKE.nextIdStr());
 		return fileService.store("anonymous", "anonymous", folderPath, files);
 	}
 
@@ -87,14 +88,15 @@ public class FileApi {
 		}
 	}
 
-	@GetMapping("/find")
+	@PostMapping("/Find")
 	@PreAuthorize("isAuthenticated()")
 	@BusinessResult
 	public List<File> find(
 		@AuthenticationPrincipal AuthPrincipal principal,
+		@RequestBody(required = false) FileFindParams params,
 		@RequestParam(required = false) String filepath,
 		@RequestParam(required = false) String filename) {
-		return fileService.find(principal.getClient(), filepath, filename);
+		return fileService.find(principal.getClient(), params);
 	}
 
 	@GetMapping("/find_page")
@@ -102,8 +104,9 @@ public class FileApi {
 	@BusinessResult
 	public Page<File> pageFind(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody FilePageFindRequest request) {
-		return fileService.pageFind(principal.getClient(), request);
+		@RequestBody FilePageFindParams request) {
+		String client = principal.getClient();
+		return fileService.pageFind(client, request);
 	}
 
 

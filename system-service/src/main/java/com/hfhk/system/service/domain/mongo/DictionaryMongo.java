@@ -1,7 +1,8 @@
 package com.hfhk.system.service.domain.mongo;
 
 import com.hfhk.cairo.mongo.data.Metadata;
-import com.hfhk.cairo.mongo.data.mapping.model.UpperCamelCaseFieldNames;
+import com.hfhk.cairo.mongo.data.mapping.model.AbstractMongoField;
+import com.hfhk.cairo.mongo.data.mapping.model.AbstractUpperCamelCaseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +14,6 @@ import java.util.List;
 /**
  * 字典
  */
-
 @Data
 @Accessors(chain = true)
 
@@ -26,6 +26,11 @@ public class DictionaryMongo {
 	 * id
 	 */
 	private String id;
+
+	/**
+	 * client
+	 */
+	private String client;
 
 	/**
 	 * code 值
@@ -45,6 +50,8 @@ public class DictionaryMongo {
 	@Builder.Default
 	private Metadata metadata = new Metadata();
 
+	public static final Field FIELD = new Field();
+
 	/**
 	 * Dictionary Item
 	 */
@@ -59,10 +66,16 @@ public class DictionaryMongo {
 		 * value code
 		 */
 		private String code;
+
 		/**
 		 * value
 		 */
 		private Object value;
+
+		/**
+		 * 名称
+		 */
+		private String name;
 		/**
 		 * metadata
 		 */
@@ -70,16 +83,21 @@ public class DictionaryMongo {
 		private Metadata metadata = new Metadata();
 	}
 
-	public static class Field extends UpperCamelCaseFieldNames {
-		public static final String Client = "Client";
-		public static final String Code = "Code";
-		public static final String Name = "Name";
-		public static final String Items = "Items";
+	public static class Field extends AbstractUpperCamelCaseField {
+		public final String CLIENT = field("Client");
+		public final String CODE = field("Code");
+		public final String Name = field("Name");
+		public final Items ITEMS = new Items(this,"Items");
 
-		public static class Item extends UpperCamelCaseFieldNames {
-			public static final String Prefix = "Items";
-			public static final String Code = "Items.Code";
-			public static final String Name = "Items.Name";
+		public static class Items extends AbstractUpperCamelCaseField {
+			public Items() {
+			}
+
+			public Items(AbstractMongoField parent, String prefix) {
+				super(parent, prefix);
+			}
+			public final String CODE = field("Code");
+			public final String VALUE = field("Value");
 		}
 	}
 }

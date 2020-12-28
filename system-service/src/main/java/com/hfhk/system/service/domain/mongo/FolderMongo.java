@@ -1,7 +1,7 @@
 package com.hfhk.system.service.domain.mongo;
 
 import com.hfhk.cairo.mongo.data.Metadata;
-import com.hfhk.cairo.mongo.data.mapping.model.UpperCamelCaseFieldNames;
+import com.hfhk.cairo.mongo.data.mapping.model.AbstractUpperCamelCaseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,8 +40,10 @@ public class FolderMongo {
 	@Builder.Default
 	private Metadata metadata = new Metadata();
 
-	public static class Field extends UpperCamelCaseFieldNames {
-		public static final String Client = "Client";
-		public static final String Path  = "path";
+	public static final Field FIELD = new Field();
+
+	public static class Field extends AbstractUpperCamelCaseField {
+		public final String CLIENT = field("Client");
+		public final String PATH = field("path");
 	}
 }

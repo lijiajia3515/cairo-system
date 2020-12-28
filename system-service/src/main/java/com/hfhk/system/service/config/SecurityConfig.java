@@ -3,6 +3,7 @@ package com.hfhk.system.service.config;
 
 import com.hfhk.cairo.security.oauth2.server.resource.web.CairoBearerTokenAccessDeniedHandler;
 import com.hfhk.cairo.security.oauth2.server.resource.web.CairoBearerTokenAuthenticationEntryPoint;
+import com.hfhk.cairo.starter.service.security.oauth2.server.resource.authentication.CairoJwtAuthenticationConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -16,22 +17,27 @@ import org.springframework.security.web.authentication.session.SessionFixationPr
 public class SecurityConfig {
 
 	@Bean
-	SecurityFilterChain securityFilterChain(HttpSecurity http
-		, CairoBearerTokenAuthenticationEntryPoint entryPoint
-		, CairoBearerTokenAccessDeniedHandler accessDeniedHandler
-		//, CairoJwtAuthenticationConverter jwtAuthenticationConverter
-	) throws Exception {
+	SecurityFilterChain securityFilterChain(HttpSecurity http,
+											CairoBearerTokenAuthenticationEntryPoint entryPoint,
+											CairoBearerTokenAccessDeniedHandler accessDeniedHandler,
+											CairoJwtAuthenticationConverter jwtAuthenticationConverter) throws Exception {
 		http
 			.csrf().disable()
 			.authorizeRequests(authorizeRequests -> authorizeRequests
+				// root
+				.mvcMatchers("/").permitAll()
+				// health
+				.mvcMatchers("/actuator/**").permitAll()
+				// test
 				.mvcMatchers("/test/**").permitAll()
+				// default
 				.mvcMatchers("/**").authenticated()
 			)
 			.oauth2ResourceServer()
 			.authenticationEntryPoint(entryPoint)
 			.accessDeniedHandler(accessDeniedHandler)
 			.jwt()
-			//.jwtAuthenticationConverter(jwtAuthenticationConverter)
+			.jwtAuthenticationConverter(jwtAuthenticationConverter)
 			.and()
 			.and()
 			.sessionManagement()

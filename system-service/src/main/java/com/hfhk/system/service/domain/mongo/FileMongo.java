@@ -1,7 +1,8 @@
 package com.hfhk.system.service.domain.mongo;
 
 
-import com.hfhk.cairo.mongo.data.mapping.model.UpperCamelCaseFieldNames;
+import com.hfhk.cairo.mongo.data.mapping.model.AbstractMongoField;
+import com.hfhk.cairo.mongo.data.mapping.model.AbstractUpperCamelCaseField;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -38,28 +39,35 @@ public class FileMongo {
 	/**
 	 * 文件大小
 	 */
+	@org.springframework.data.mongodb.core.mapping.Field("length")
 	private Long length;
 
 	/**
 	 * chunk Size
 	 */
+	@org.springframework.data.mongodb.core.mapping.Field("chunkSize")
 	private Integer chunkSize;
 
 	/**
 	 * 文件时间
 	 */
+	@org.springframework.data.mongodb.core.mapping.Field("uploadDate")
 	private LocalDateTime uploadDate;
 
 	/**
 	 * md5
 	 */
+	@org.springframework.data.mongodb.core.mapping.Field("md5")
 	private String md5;
 
 	/**
 	 * Metadata
 	 */
 	@Builder.Default
+	@org.springframework.data.mongodb.core.mapping.Field("metadata")
 	private Metadata metadata = new Metadata();
+
+	public static final Field FIELD = new Field();
 
 	@Data
 	@EqualsAndHashCode(callSuper = true)
@@ -70,21 +78,29 @@ public class FileMongo {
 		/**
 		 * 文件类型
 		 */
+		@org.springframework.data.mongodb.core.mapping.Field("_contentType")
 		private String _contentType;
 	}
 
-	public static class Field extends UpperCamelCaseFieldNames {
-		public static final String Client = "client";
-		public static final String FolderPath = "folderPath";
-		public static final String Filename = "filename";
-		public static final String Length = "length";
-		public static final String ChuckSize = "chuckSize";
-		public static final String UploadDate = "uploadDate";
-		public static final String md5 = "md5";
-		public static final Metadata Metadata = new Metadata();
+	public static class Field extends AbstractUpperCamelCaseField {
+		public final String CLIENT = field("Client");
+		public final String FOLDER_PATH = field("FolderPath");
+		public final String FILENAME = field("filename");
+		public final String LENGTH = field("length");
+		public final String CHUCK_SIZE = field("chuckSize");
+		public final String UPLOAD_DATE = field("uploadDate");
+		public final String MD5 = "md5";
+		public final Metadata Metadata = new Metadata(this, "Metadata");
 
-		public static class Metadata extends UpperCamelCaseFieldNames.Metadata {
-			public static final String _ContentType = "_contentType";
+		public static class Metadata extends AbstractUpperCamelCaseField.Metadata {
+			public Metadata() {
+			}
+
+			public Metadata(AbstractMongoField parent, String prefix) {
+				super(parent, prefix);
+			}
+
+			public static final String _CONTENT_TYPE = "_contentType";
 		}
 	}
 

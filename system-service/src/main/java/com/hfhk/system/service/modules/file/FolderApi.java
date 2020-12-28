@@ -1,11 +1,10 @@
-package com.hfhk.system.service.modules.file.endpoint.api;
+package com.hfhk.system.service.modules.file;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.cairo.starter.service.web.handler.BusinessResult;
 import com.hfhk.system.file.domain.Folder;
-import com.hfhk.system.file.domain.request.FolderPageFindRequest;
-import com.hfhk.system.service.modules.file.service.FolderService;
+import com.hfhk.system.file.domain.request.FolderPageFindParams;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +47,7 @@ public class FolderApi {
 	@BusinessResult
 	public Page<String> find(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody FolderPageFindRequest request) {
+		@RequestBody FolderPageFindParams request) {
 		return folderService.pageFind(principal.getClient(), request);
 	}
 

@@ -1,5 +1,6 @@
 package com.hfhk.system.file.domain.request;
 
+import com.hfhk.cairo.core.request.PageRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,8 +15,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FolderSaveRequest implements Serializable {
+public class FilePageFindParams implements Serializable {
 	@Builder.Default
-	private String parentId = "/";
-	private String path;
+	private PageRequest page = new PageRequest();
+
+	private String filepath;
+	private String filename;
 }
