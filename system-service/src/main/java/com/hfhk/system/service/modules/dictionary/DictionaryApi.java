@@ -1,5 +1,6 @@
 package com.hfhk.system.service.modules.dictionary;
 
+import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.system.dictionary.domain.Dictionary;
 import com.hfhk.system.service.modules.dictionary.domain.request.*;
@@ -22,14 +23,6 @@ public class DictionaryApi {
 
 	public DictionaryApi(DictionaryService dictionaryService) {
 		this.dictionaryService = dictionaryService;
-	}
-
-	@PostMapping("/Find")
-	@PreAuthorize("isAuthenticated()")
-	public List<Dictionary> list(@AuthenticationPrincipal AuthPrincipal principal,
-								 @RequestBody(required = false) DictionaryFindParam request) {
-		String client = principal.getClient();
-		return dictionaryService.find(client, request);
 	}
 
 	/**
@@ -107,7 +100,7 @@ public class DictionaryApi {
 	public Optional<Dictionary> modifyItems(@AuthenticationPrincipal AuthPrincipal principal,
 											@RequestBody DictionaryItemModifyParam request) {
 		String client = principal.getClient();
-		return dictionaryService.modifyItems(client, request);
+		return dictionaryService.modifyItem(client, request);
 	}
 
 	/**
@@ -123,5 +116,21 @@ public class DictionaryApi {
 											@RequestBody DictionaryItemDeleteParam request) {
 		String client = principal.getClient();
 		return dictionaryService.deleteItems(client, request);
+	}
+
+	@PostMapping("/Find")
+	@PreAuthorize("isAuthenticated()")
+	public List<Dictionary> find(@AuthenticationPrincipal AuthPrincipal principal,
+								 @RequestBody DictionaryFindParam param) {
+		String client = principal.getClient();
+		return dictionaryService.find(client, param);
+	}
+
+	@PostMapping("/FindPage")
+	@PreAuthorize("isAuthenticated()")
+	public Page<Dictionary> findPage(@AuthenticationPrincipal AuthPrincipal principal,
+									 @RequestBody DictionaryFindParam param) {
+		String client = principal.getClient();
+		return dictionaryService.findPage(client, param);
 	}
 }

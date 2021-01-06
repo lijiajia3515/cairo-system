@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.util.List;
 
@@ -62,6 +63,8 @@ public class DictionaryMongo {
 	@AllArgsConstructor
 	@Builder
 	public static class Item {
+
+		@org.springframework.data.mongodb.core.mapping.Field(name = "Id")
 		private String id;
 
 		/**
@@ -93,7 +96,8 @@ public class DictionaryMongo {
 			public Items(AbstractMongoField parent, String prefix) {
 				super(parent, prefix);
 			}
-			public final String ID = field("ID");
+
+			public final String ID = field("Id");
 			public final String VALUE = field("Value");
 			public final String $VALUE = field("$.Value");
 			public final String NAME = field("Name");
