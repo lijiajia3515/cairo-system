@@ -2,7 +2,7 @@ package com.hfhk.system.service.modules.file;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.system.file.domain.Folder;
-import com.hfhk.system.file.domain.request.FolderPageFindParams;
+import com.hfhk.system.file.domain.request.FolderFindParam;
 import com.hfhk.system.file.util.FolderUtil;
 import com.hfhk.system.service.domain.mongo.FolderMongo;
 import com.mongodb.client.result.DeleteResult;
@@ -29,14 +29,14 @@ public class FolderServiceImpl implements FolderService {
 	}
 
 	@Override
-	public Page<String> pageFind(String client, FolderPageFindParams request) {
-		final Query query = Query.query(Criteria.where("client").is(client).and("_id").regex(request.getPath()));
+	public Page<String> pageFind(String client, FolderFindParam param) {
+		final Query query = Query.query(Criteria.where("client").is(client).and("_id").regex(param.getPath()));
 		query.fields().include("path");
 		long total = mongoTemplate.count(query, FolderMongo.class);
-		query.with(request.getPage().pageable());
+		query.with(param.pageable());
 		List<String> paths = mongoTemplate.find(query, FolderMongo.class).stream()
 			.map(FolderMongo::getPath).sorted().collect(Collectors.toList());
-		return new Page<>(request.getPage(), paths, total);
+		return new Page<>(param, paths, total);
 	}
 
 	@Override

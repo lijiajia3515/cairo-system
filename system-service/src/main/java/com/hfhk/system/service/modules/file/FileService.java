@@ -2,8 +2,7 @@ package com.hfhk.system.service.modules.file;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.request.FileFindParams;
-import com.hfhk.system.file.domain.request.FilePageFindParams;
+import com.hfhk.system.file.domain.request.FileFindParam;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,11 +44,11 @@ public interface FileService {
 	/**
 	 * 文件查询
 	 *
-	 * @param client   client
-	 * @param params
+	 * @param client client
+	 * @param param
 	 * @return file list page
 	 */
-	List<File> find(String client, FileFindParams params);
+	List<File> find(String client, FileFindParam param);
 
 
 	/**
@@ -59,5 +58,5 @@ public interface FileService {
 	 * @param request request
 	 * @return file list page
 	 */
-	Page<File> pageFind(String client, FilePageFindParams request);
+	Page<File> pageFind(String client, FileFindParam request);
 }

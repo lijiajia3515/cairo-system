@@ -6,10 +6,10 @@ apply from: "${rootDir}/gradle/devtools.gradle"
 
 dependencies {
   annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
-
-  // actuator
   implementation "org.springframework.boot:spring-boot-starter"
-  implementation "org.springframework.boot:spring-boot-starter-actuator"
+  // actuator
+
+  // implementation "org.springframework.boot:spring-boot-starter-actuator"
 
   // data
   implementation "org.springframework.boot:spring-boot-starter-data-mongodb"
@@ -39,8 +39,8 @@ dependencies {
   // implementation "com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config"
 
   // cairo
-  implementation "com.hfhk.cairo.starter:mongo:${cairoVersion}"
-  implementation "com.hfhk.cairo.starter:service:${cairoVersion}"
+  implementation "com.hfhk.cairo.starter:cairo-starter-mongo:${cairoVersion}"
+  implementation "com.hfhk.cairo.starter:cairo-starter-service:${cairoVersion}"
 
   // system
   implementation project(':system-domain')

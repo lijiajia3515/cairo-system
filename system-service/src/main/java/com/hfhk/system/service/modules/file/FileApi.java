@@ -4,10 +4,8 @@ import cn.hutool.core.net.URLEncoder;
 import com.hfhk.cairo.core.Constants;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
-import com.hfhk.cairo.starter.service.web.handler.BusinessResult;
 import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.request.FileFindParams;
-import com.hfhk.system.file.domain.request.FilePageFindParams;
+import com.hfhk.system.file.domain.request.FileFindParam;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.http.HttpHeaders;
@@ -46,7 +44,6 @@ public class FileApi {
 	 */
 	@PostMapping("/Upload")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public List<File> upload(@AuthenticationPrincipal AuthPrincipal principal,
 							 @RequestParam(defaultValue = "/") String folderPath,
 							 @RequestPart Collection<MultipartFile> files) {
@@ -61,7 +58,6 @@ public class FileApi {
 	 */
 	@PostMapping("/UploadTemporary")
 	@PermitAll
-	@BusinessResult
 	public List<File> temporaryUpload(
 		@RequestPart Collection<MultipartFile> files) {
 		String folderPath = "/temporary/".concat(Constants.SNOWFLAKE.nextIdStr());
@@ -90,21 +86,18 @@ public class FileApi {
 
 	@PostMapping("/Find")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public List<File> find(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody(required = false) FileFindParams params,
-		@RequestParam(required = false) String filepath,
-		@RequestParam(required = false) String filename) {
-		return fileService.find(principal.getClient(), params);
+		@RequestBody(required = false) FileFindParam param) {
+		String client = principal.getClient();
+		return fileService.find(client, param);
 	}
 
-	@GetMapping("/find_page")
+	@GetMapping("/FindPage")
 	@PreAuthorize("isAuthenticated()")
-	@BusinessResult
 	public Page<File> pageFind(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody FilePageFindParams request) {
+		@RequestBody FileFindParam request) {
 		String client = principal.getClient();
 		return fileService.pageFind(client, request);
 	}

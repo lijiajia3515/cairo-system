@@ -1,6 +1,5 @@
 package com.hfhk.system.service.modules.dictionary;
 
-import cn.hutool.core.util.IdUtil;
 import com.hfhk.cairo.core.Constants;
 import com.hfhk.cairo.core.exception.UnknownBusinessException;
 import com.hfhk.cairo.mongo.data.Metadata;
@@ -15,9 +14,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -38,10 +40,10 @@ public class DictionaryService {
 	 * @param params params
 	 * @return dictionary optional
 	 */
-	public Optional<Dictionary> save(String client, DictionarySaveParams params) {
+	public Optional<Dictionary> save(@NotNull String client, @Validated DictionarySaveParam params) {
 		DictionaryMongo dictionaryMongo = DictionaryMongo.builder()
 			.client(client)
-			.code(Optional.ofNullable(params.getCode()).orElse(IdUtil.objectId()))
+			.code(Optional.ofNullable(params.getId()).orElse(Constants.SNOWFLAKE.nextIdStr()))
 			.name(params.getName())
 			.items(
 				Optional.ofNullable(params.getItems())
@@ -49,8 +51,8 @@ public class DictionaryService {
 					.flatMap(Collection::stream)
 					.map(x ->
 						DictionaryMongo.Item.builder()
-							.code(Optional.ofNullable(x.getCode()).orElse(Constants.SNOWFLAKE.nextIdStr()))
-							.value(x.getValue())
+							.id(Constants.SNOWFLAKE.nextIdStr())
+							.value(Optional.ofNullable(x.getValue()).orElse(Constants.SNOWFLAKE.nextIdStr()))
 							.name(x.getName())
 							.metadata(new Metadata().setSort(Constants.SNOWFLAKE.nextId()))
 							.build()
@@ -59,23 +61,25 @@ public class DictionaryService {
 			)
 			.build();
 		dictionaryMongo = mongoTemplate.insert(dictionaryMongo, mongoProperties.Collection.Dictionary);
-		return convert(dictionaryMongo);
+		log.debug("[insert] result-> {}", dictionaryMongo);
+
+		return find(client, params.getId());
 	}
 
 	/**
 	 * dictionary modify
 	 *
-	 * @param request request
+	 * @param param param
 	 * @return 1
 	 */
-	public Optional<Dictionary> modify(String client, DictionarySaveParams request) {
-		final List<DictionaryMongo.Item> items = Optional.ofNullable(request.getItems())
+	public Optional<Dictionary> modify(@NotNull String client, @Validated DictionarySaveParam param) {
+		final List<DictionaryMongo.Item> items = Optional.ofNullable(param.getItems())
 			.stream()
 			.flatMap(Collection::stream)
 			.map(x ->
 				DictionaryMongo.Item.builder()
-					.code(Optional.ofNullable(x.getCode()).orElse(IdUtil.objectId()))
-					.value(x.getValue())
+					.id(Optional.ofNullable(x.getId()).orElse(Constants.SNOWFLAKE.nextIdStr()))
+					.value(Optional.ofNullable(x.getValue()).orElse(Constants.SNOWFLAKE.nextIdStr()))
 					.name(x.getName())
 					.metadata(new Metadata().setSort(Constants.SNOWFLAKE.nextId()))
 					.build()
@@ -83,16 +87,16 @@ public class DictionaryService {
 			.collect(Collectors.toList());
 		Query query = Query.query(
 			Criteria.where(DictionaryMongo.FIELD.CLIENT).is(client)
-				.and(DictionaryMongo.FIELD.CODE).is(request.getCode())
+				.and(DictionaryMongo.FIELD.CODE).is(param.getId())
 		);
 
-		Update update = Update.update(DictionaryMongo.FIELD.Name, request.getName())
+		Update update = Update.update(DictionaryMongo.FIELD.Name, param.getName())
 			.set(DictionaryMongo.FIELD.ITEMS.SELF, items);
 
 		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.Collection.Dictionary);
 
 		log.debug("[modify] result-> {}", updateResult);
-		return convert(mongoTemplate.findOne(query, DictionaryMongo.class, mongoProperties.Collection.Dictionary));
+		return find(client, param.getId());
 
 	}
 
@@ -100,23 +104,19 @@ public class DictionaryService {
 	 * dictionary delete
 	 *
 	 * @param client client
-	 * @param params params
+	 * @param param  param
 	 * @return remove dictionary list
 	 */
-	public List<Dictionary> delete(String client, DictionaryDeleteParams params) {
-		Criteria criteria = Criteria.where(DictionaryMongo.FIELD.CLIENT).is(client);
-		Optional.ofNullable(params)
-			.ifPresent(param -> Optional
-				.ofNullable(param.getCodes())
-				.filter(x -> !x.isEmpty())
-				.ifPresentOrElse(x -> criteria.and(DictionaryMongo.FIELD.CODE).in(x), () -> {
-					throw new UnknownBusinessException("Code为空");
-				})
-			);
+	public List<Dictionary> delete(@NotNull String client, @Validated DictionaryDeleteParam param) {
+		Criteria criteria = Criteria
+			.where(DictionaryMongo.FIELD.CLIENT).is(client)
+			.and(DictionaryMongo.FIELD.CODE).in(param.getIds());
+
 		Query query = Query.query(criteria);
 		return mongoTemplate.findAllAndRemove(query, DictionaryMongo.class, mongoProperties.Collection.Dictionary)
 			.stream()
-			.flatMap(a -> convert(a).stream())
+			.filter(Objects::nonNull)
+			.map(DictionaryConverter::mapper)
 			.collect(Collectors.toList());
 	}
 
@@ -127,7 +127,7 @@ public class DictionaryService {
 	 * @param params query params
 	 * @return x
 	 */
-	public List<Dictionary> find(String client, DictionaryFindParams params) {
+	public List<Dictionary> find(@NotNull String client, @Validated DictionaryFindParam params) {
 		Criteria criteria = Criteria.where(DictionaryMongo.FIELD.CLIENT).is(client);
 		Optional.ofNullable(params)
 			.ifPresent(x -> {
@@ -138,7 +138,8 @@ public class DictionaryService {
 
 		return mongoTemplate.find(query, DictionaryMongo.class, mongoProperties.Collection.Dictionary)
 			.stream()
-			.flatMap(x -> convert(x).stream())
+			.filter(Objects::nonNull)
+			.map(DictionaryConverter::mapper)
 			.collect(Collectors.toList());
 	}
 
@@ -148,17 +149,17 @@ public class DictionaryService {
 	 * @param params params
 	 * @return dictionary optional
 	 */
-	public Optional<Dictionary> putItems(String client, DictionaryItemPutParams params) {
+	public Optional<Dictionary> putItems(@NotNull String client, @Validated DictionaryItemPutParam params) {
 		final Criteria criteria = Criteria
 			.where(DictionaryMongo.FIELD.CLIENT).is(client)
-			.and(DictionaryMongo.FIELD.CODE).is(params.getCode());
+			.and(DictionaryMongo.FIELD.CODE).is(params.getId());
 
 		final List<DictionaryMongo.Item> newItems = Optional
 			.ofNullable(params.getItems())
 			.stream()
 			.flatMap(Collection::stream)
 			.map(x -> DictionaryMongo.Item.builder()
-				.code(x.getCode())
+				.id(Optional.ofNullable(x.getId()).orElse(Constants.SNOWFLAKE.nextIdStr()))
 				.value(x.getValue())
 				.metadata(new Metadata().setSort(Constants.SNOWFLAKE.nextId()))
 				.build())
@@ -171,47 +172,48 @@ public class DictionaryService {
 		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.Collection.Dictionary);
 		log.debug("[dictionary][putItem] result-> : {}", updateResult);
 
-		return convert(mongoTemplate.findOne(query, DictionaryMongo.class, mongoProperties.Collection.Dictionary));
+		return find(client, params.getId());
 	}
 
 	/**
 	 * dictionary item modify
 	 *
-	 * @param request request
+	 * @param param param
 	 * @return dictionary optional
 	 */
-	public Optional<Dictionary> modifyItems(String client, DictionaryItemModifyParams request) {
+	public Optional<Dictionary> modifyItems(@NotNull String client, @Validated DictionaryItemModifyParam param) {
 		final Criteria criteria = Criteria
-			.where(DictionaryMongo.FIELD.CODE).is(client)
-			.and(DictionaryMongo.FIELD.CODE).is(request.getCode())
-			.and(DictionaryMongo.FIELD.ITEMS.CODE).is(request.getItem());
+			.where(DictionaryMongo.FIELD.CLIENT).is(client)
+			.and(DictionaryMongo.FIELD.CODE).is(param.getId())
+			.and(DictionaryMongo.FIELD.ITEMS.ID).in(param.getItem());
 		final Query query = Query.query(criteria);
 
-		final Update update = Update
-			.update(DictionaryMongo.FIELD.ITEMS.VALUE, request.getItem().getValue());
+		final Update update = new Update()
+			.set(DictionaryMongo.FIELD.ITEMS.$VALUE, param.getItem().getValue())
+			.set(DictionaryMongo.FIELD.ITEMS.$NAME, param.getItem().getName());
 
 		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.Collection.Dictionary);
 		log.debug("[dictionary][putItem] result-> : {}", updateResult);
 
-		return convert(mongoTemplate.findOne(Query.query(Criteria.where(DictionaryMongo.FIELD.CODE).is(request.getCode())), DictionaryMongo.class, mongoProperties.Collection.Dictionary));
+		return find(client, param.getId());
 	}
 
 	/**
 	 * dictionary item delete
 	 *
-	 * @param params params
+	 * @param param param
 	 * @return dictionary optional
 	 */
-	public Optional<Dictionary> deleteItems(String client, DictionaryItemDeleteParams params) {
+	public Optional<Dictionary> deleteItems(@NotNull String client, @Validated DictionaryItemDeleteParam param) {
 		final Criteria criteria = Criteria
 			.where(DictionaryMongo.FIELD.CLIENT).is(client);
-		Optional.of(params)
+		Optional.of(param)
 			.ifPresent(x -> Optional
-				.ofNullable(x.getCode())
+				.ofNullable(x.getId())
 				.ifPresentOrElse(
-					code -> criteria.and(DictionaryMongo.FIELD.CODE).is(code),
+					id -> criteria.and(DictionaryMongo.FIELD.CODE).is(id),
 					() -> {
-						throw new UnknownBusinessException("Code不能为空");
+						throw new UnknownBusinessException("Id不能为空");
 					}
 				)
 			);
@@ -219,40 +221,27 @@ public class DictionaryService {
 		final Query query = Query.query(criteria);
 
 		final Update update = new Update();
-		Optional.ofNullable(params.getItemCodes())
+		Optional.ofNullable(param.getItemIds())
 			.ifPresentOrElse(
-				itemCodes -> update.pullAll(DictionaryMongo.FIELD.ITEMS.CODE, itemCodes.toArray()),
+				itemIds -> update.pullAll(DictionaryMongo.FIELD.ITEMS.ID, itemIds.toArray()),
 				() -> {
-					throw new UnknownBusinessException("ItemCodes为空");
+					throw new UnknownBusinessException("ItemId为空");
 				}
 			);
-		update.pullAll(DictionaryMongo.FIELD.ITEMS.CODE, params.getItemCodes().toArray(new String[0]));
+		update.pullAll(DictionaryMongo.FIELD.ITEMS.ID, param.getItemIds().toArray(new String[0]));
 
 		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.Collection.Dictionary);
 		log.debug("[dictionary][deleteItem] result-> : {}", updateResult);
 
-		return convert(mongoTemplate.findOne(query, DictionaryMongo.class, mongoProperties.Collection.Dictionary));
+		return find(client, param.getId());
 	}
 
-	/**
-	 * mongo to model
-	 *
-	 * @param mongo mongo
-	 * @return dictionary optional
-	 */
-	private Optional<Dictionary> convert(DictionaryMongo mongo) {
-		return Optional.ofNullable(mongo)
-			.map(x ->
-				Dictionary.builder()
-					.code(x.getCode())
-					.name(x.getName())
-					.items(
-						Optional.ofNullable(x.getItems())
-							.stream().flatMap(Collection::stream)
-							.map(y -> Dictionary.Item.builder().code(y.getCode()).value(y.getValue()).name(y.getName()).build())
-							.collect(Collectors.toList())
-					)
-					.build()
-			);
+	Optional<Dictionary> find(String client, String id) {
+		Criteria criteria = Criteria.where(DictionaryMongo.FIELD.CLIENT).is(client).and(DictionaryMongo.FIELD.CODE).is(id);
+		Query query = Query.query(criteria);
+		return Optional.ofNullable(mongoTemplate.findOne(query, DictionaryMongo.class, mongoProperties.Collection.Dictionary))
+			.map(DictionaryConverter::mapper);
 	}
+
+
 }

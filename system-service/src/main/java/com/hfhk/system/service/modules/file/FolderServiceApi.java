@@ -3,7 +3,7 @@ package com.hfhk.system.service.modules.file;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.system.file.domain.Folder;
-import com.hfhk.system.file.domain.request.FolderPageFindParams;
+import com.hfhk.system.file.domain.request.FolderFindParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -25,7 +25,7 @@ public class FolderServiceApi {
 	@GetMapping("/find")
 	@PreAuthorize("isAuthenticated()")
 	public Page<String> find(@AuthenticationPrincipal AuthPrincipal principal,
-							 @RequestBody FolderPageFindParams request) {
+							 @RequestBody FolderFindParam request) {
 		return folderService.pageFind(principal.getClient(), request);
 	}
 

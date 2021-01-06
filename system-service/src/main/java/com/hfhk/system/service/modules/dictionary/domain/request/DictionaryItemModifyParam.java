@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -18,16 +19,16 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DictionaryItemPutParams {
+public class DictionaryItemModifyParam implements Serializable {
 
 	/**
 	 * code
 	 */
-	private String code;
+	private String id;
 
 	/**
 	 * 项
 	 */
-	private List<Dictionary.Item> items;
+	private Dictionary.Item item;
 
 }

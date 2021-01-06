@@ -3,8 +3,7 @@ package com.hfhk.system.service.modules.file;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.request.FileFindParams;
-import com.hfhk.system.file.domain.request.FilePageFindParams;
+import com.hfhk.system.file.domain.request.FileFindParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,16 +44,16 @@ public class FileServiceApi {
 	@PreAuthorize("isAuthenticated()")
 	public List<File> find(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody FileFindParams params) {
+		@RequestBody FileFindParam param) {
 		String client = principal.getClient();
-		return fileService.find(client, params);
+		return fileService.find(client, param);
 	}
 
 	@GetMapping("/find_page")
 	@PreAuthorize("isAuthenticated()")
 	public Page<File> pageFind(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody FilePageFindParams request) {
+		@RequestBody FileFindParam request) {
 		return fileService.pageFind(principal.getClient(), request);
 	}
 }

@@ -2,7 +2,7 @@ package com.hfhk.system.service.modules.file;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.system.file.domain.Folder;
-import com.hfhk.system.file.domain.request.FolderPageFindParams;
+import com.hfhk.system.file.domain.request.FolderFindParam;
 
 import java.util.List;
 
@@ -45,7 +45,7 @@ public interface FolderService {
 	 * @param request request
 	 * @return filepath
 	 */
-	Page<String> pageFind(String client, FolderPageFindParams request);
+	Page<String> pageFind(String client, FolderFindParam request);
 
 	/**
 	 * 查询

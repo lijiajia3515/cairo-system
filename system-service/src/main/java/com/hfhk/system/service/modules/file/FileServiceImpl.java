@@ -1,13 +1,12 @@
 package com.hfhk.system.service.modules.file;
 
-import com.hfhk.auth.client.UserOAuthClientCredentialsClient;
+import com.hfhk.auth.client.UserClientCredentialsClient;
 import com.hfhk.auth.domain.Metadata;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.mongo.data.Created;
 import com.hfhk.cairo.mongo.data.LastModified;
 import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.request.FileFindParams;
-import com.hfhk.system.file.domain.request.FilePageFindParams;
+import com.hfhk.system.file.domain.request.FileFindParam;
 import com.hfhk.system.service.constants.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.FileMongo;
 import lombok.extern.slf4j.Slf4j;
@@ -39,12 +38,12 @@ public class FileServiceImpl implements FileService {
 
 	private final GridFsTemplate gridFsTemplate;
 
-	private final UserOAuthClientCredentialsClient userClient;
+	private final UserClientCredentialsClient userClient;
 
 	public FileServiceImpl(HfhkMongoProperties mongoProperties,
 						   MongoTemplate mongoTemplate,
 						   GridFsTemplate gridFsTemplate,
-						   UserOAuthClientCredentialsClient userClient) {
+						   UserClientCredentialsClient userClient) {
 		this.mongoProperties = mongoProperties;
 		this.mongoTemplate = mongoTemplate;
 		this.gridFsTemplate = gridFsTemplate;
@@ -95,9 +94,9 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public List<File> find(String client, FileFindParams params) {
+	public List<File> find(String client, FileFindParam param) {
 		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
-		Optional.ofNullable(params)
+		Optional.ofNullable(param)
 			.ifPresent(x -> {
 				Optional.ofNullable(x.getFilepath()).ifPresent(y -> criteria.and(FileMongo.FIELD.FOLDER_PATH).regex(y));
 				Optional.ofNullable(x.getFilename()).ifPresent(y -> criteria.and(FileMongo.FIELD.FILENAME).regex(y));
@@ -111,16 +110,16 @@ public class FileServiceImpl implements FileService {
 	}
 
 	@Override
-	public Page<File> pageFind(String client, FilePageFindParams request) {
+	public Page<File> pageFind(String client, FileFindParam param) {
 		Criteria criteria = Criteria.where("client").is(client);
 
-		Optional.ofNullable(request.getFilepath()).ifPresent(x -> criteria.and("folderPath").regex(x));
-		Optional.ofNullable(request.getFilename()).ifPresent(x -> criteria.and("filename").regex(x));
+		Optional.ofNullable(param.getFilepath()).ifPresent(x -> criteria.and("folderPath").regex(x));
+		Optional.ofNullable(param.getFilename()).ifPresent(x -> criteria.and("filename").regex(x));
 		Query query = Query.query(criteria);
 		long total = mongoTemplate.count(query, FileMongo.class);
-		query.with(request.getPage().pageable());
+		query.with(param.pageable());
 		List<File> files = mongoTemplate.find(query, FileMongo.class).stream().flatMap(x -> optionalFile(x).stream()).collect(Collectors.toList());
-		return new Page<>(request.getPage(), files, total);
+		return new Page<>(param, files, total);
 	}
 
 

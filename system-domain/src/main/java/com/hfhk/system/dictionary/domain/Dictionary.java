@@ -23,7 +23,7 @@ public class Dictionary implements Serializable {
 	/**
 	 * code
 	 */
-	private String code;
+	private String id;
 
 	/**
 	 * name
@@ -42,9 +42,9 @@ public class Dictionary implements Serializable {
 	@Builder
 	public static class Item implements Serializable {
 		/**
-		 * code
+		 * id
 		 */
-		private String code;
+		private String id;
 
 		/**
 		 * value

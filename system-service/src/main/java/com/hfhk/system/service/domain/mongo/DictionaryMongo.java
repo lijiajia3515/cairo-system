@@ -62,10 +62,7 @@ public class DictionaryMongo {
 	@AllArgsConstructor
 	@Builder
 	public static class Item {
-		/**
-		 * value code
-		 */
-		private String code;
+		private String id;
 
 		/**
 		 * value
@@ -87,7 +84,7 @@ public class DictionaryMongo {
 		public final String CLIENT = field("Client");
 		public final String CODE = field("Code");
 		public final String Name = field("Name");
-		public final Items ITEMS = new Items(this,"Items");
+		public final Items ITEMS = new Items(this, "Items");
 
 		public static class Items extends AbstractUpperCamelCaseField {
 			public Items() {
@@ -96,8 +93,11 @@ public class DictionaryMongo {
 			public Items(AbstractMongoField parent, String prefix) {
 				super(parent, prefix);
 			}
-			public final String CODE = field("Code");
+			public final String ID = field("ID");
 			public final String VALUE = field("Value");
+			public final String $VALUE = field("$.Value");
+			public final String NAME = field("Name");
+			public final String $NAME = field("$.Name");
 		}
 	}
 }

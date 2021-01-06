@@ -27,7 +27,7 @@ public class DictionaryApi {
 	@PostMapping("/Find")
 	@PreAuthorize("isAuthenticated()")
 	public List<Dictionary> list(@AuthenticationPrincipal AuthPrincipal principal,
-								 @RequestBody(required = false) DictionaryFindParams request) {
+								 @RequestBody(required = false) DictionaryFindParam request) {
 		String client = principal.getClient();
 		return dictionaryService.find(client, request);
 	}
@@ -43,7 +43,7 @@ public class DictionaryApi {
 	@PreAuthorize("isAuthenticated()")
 	public Optional<Dictionary> save(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody DictionarySaveParams request) {
+		@RequestBody DictionarySaveParam request) {
 		String client = principal.getClient();
 		return dictionaryService.save(client, request);
 	}
@@ -59,7 +59,7 @@ public class DictionaryApi {
 	@PreAuthorize("isAuthenticated()")
 	public Optional<Dictionary> modify(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody DictionarySaveParams request) {
+		@RequestBody DictionarySaveParam request) {
 		String client = principal.getClient();
 		return dictionaryService.modify(client, request);
 	}
@@ -75,7 +75,7 @@ public class DictionaryApi {
 	@PreAuthorize("isAuthenticated()")
 	public List<Dictionary> delete(
 		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody DictionaryDeleteParams params) {
+		@RequestBody DictionaryDeleteParam params) {
 		String client = principal.getClient();
 		return dictionaryService.delete(client, params);
 	}
@@ -90,7 +90,7 @@ public class DictionaryApi {
 	@PutMapping("/Item/Put")
 	@PreAuthorize("isAuthenticated()")
 	public Optional<Dictionary> putItems(@AuthenticationPrincipal AuthPrincipal principal,
-										 @RequestBody DictionaryItemPutParams request) {
+										 @RequestBody DictionaryItemPutParam request) {
 		String client = principal.getClient();
 		return dictionaryService.putItems(client, request);
 	}
@@ -105,7 +105,7 @@ public class DictionaryApi {
 	@PutMapping("/Item/Modify")
 	@PreAuthorize("isAuthenticated()")
 	public Optional<Dictionary> modifyItems(@AuthenticationPrincipal AuthPrincipal principal,
-											@RequestBody DictionaryItemModifyParams request) {
+											@RequestBody DictionaryItemModifyParam request) {
 		String client = principal.getClient();
 		return dictionaryService.modifyItems(client, request);
 	}
@@ -120,7 +120,7 @@ public class DictionaryApi {
 	@DeleteMapping("/Item/Delete")
 	@PreAuthorize("isAuthenticated()")
 	public Optional<Dictionary> deleteItems(@AuthenticationPrincipal AuthPrincipal principal,
-											@RequestBody DictionaryItemDeleteParams request) {
+											@RequestBody DictionaryItemDeleteParam request) {
 		String client = principal.getClient();
 		return dictionaryService.deleteItems(client, request);
 	}

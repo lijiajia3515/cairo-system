@@ -1,6 +1,5 @@
 package com.hfhk.system.service.modules.dictionary.domain.request;
 
-import com.hfhk.system.dictionary.domain.Dictionary;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * dictionary save request
@@ -19,20 +18,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DictionarySaveParams implements Serializable {
+public class DictionaryItemDeleteParam implements Serializable {
 
 	/**
 	 * code
 	 */
-	private String code;
+	private String id;
 
 	/**
 	 * name
 	 */
-	private String name;
-
-	/**
-	 * values
-	 */
-	private List<Dictionary.Item> items;
+	private Collection<String> itemIds;
 }
