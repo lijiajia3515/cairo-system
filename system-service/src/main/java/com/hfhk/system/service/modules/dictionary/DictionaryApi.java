@@ -95,7 +95,7 @@ public class DictionaryApi {
 	 * @param request   request
 	 * @return dictionary optional
 	 */
-	@PutMapping("/Item/Modify")
+	@PatchMapping("/Item/Modify")
 	@PreAuthorize("isAuthenticated()")
 	public Optional<Dictionary> modifyItems(@AuthenticationPrincipal AuthPrincipal principal,
 											@RequestBody DictionaryItemModifyParam request) {
