@@ -7,6 +7,7 @@ import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.mongo.data.Created;
 import com.hfhk.cairo.mongo.data.LastModified;
 import com.hfhk.system.file.domain.File;
+import com.hfhk.system.file.domain.FileDeleteParam;
 import com.hfhk.system.file.domain.FileFindParam;
 import com.hfhk.system.service.constants.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.FileMongo;
@@ -78,7 +79,7 @@ public class FileService {
 						.set(FileMongo.FIELD.PATH, path)
 						.set(FileMongo.FIELD.METADATA.CREATED.SELF, created)
 						.set(FileMongo.FIELD.METADATA.LAST_MODIFIED.SELF, lastModified);
-					mongoTemplate.updateFirst(query, update, FileMongo.class, mongoProperties.COLLECTION.FILE);
+					mongoTemplate.updateFirst(query, update, FileMongo.class, mongoProperties.COLLECTION.file());
 					return id;
 				} catch (IOException e) {
 					throw new BusinessException(FileBusiness.UploadField, e);
@@ -87,12 +88,8 @@ public class FileService {
 			.collect(Collectors.toList());
 		Criteria criteria = Criteria.where(FileMongo.FIELD._ID).in(ids);
 		Query query = Query.query(criteria);
-		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.FILE);
-		Set<String> uids = contents.stream()
-			.flatMap(x -> Stream.of(x.getMetadata().getCreated().getUid(), x.getMetadata().getLastModified().getUid()))
-			.collect(Collectors.toSet());
-		// userClient.find
-		return null;
+		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.file());
+		return buildFiles(contents);
 	}
 
 	/**
@@ -112,15 +109,16 @@ public class FileService {
 	 *
 	 * @param client client
 	 * @param uid    uid
-	 * @param ids    ids
+	 * @param param  param
+	 * @return file list
 	 */
-	void delete(String client, String uid, List<String> ids) {
-		if (!ids.isEmpty()) {
-			Criteria criteria = Criteria
-				.where(FileMongo.FIELD.CLIENT).is(client)
-				.and(FileMongo.FIELD._ID).in(ids);
-			gridFsTemplate.delete(Query.query(criteria));
-		}
+	List<File> delete(String client, String uid, FileDeleteParam param) {
+		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client).and(FileMongo.FIELD._ID).in(param);
+		Query query = Query.query(criteria);
+		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.file());
+		List<File> files = buildFiles(contents);
+		gridFsTemplate.delete(Query.query(criteria));
+		return files;
 	}
 
 
@@ -140,7 +138,7 @@ public class FileService {
 			});
 
 		Query query = Query.query(criteria);
-		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.FILE);
+		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.file());
 		return buildFiles(contents);
 
 	}
@@ -159,10 +157,10 @@ public class FileService {
 		Optional.ofNullable(param.getPath()).ifPresent(x -> criteria.and(FileMongo.FIELD.PATH).regex(x));
 		Optional.ofNullable(param.getFilename()).ifPresent(x -> criteria.and(FileMongo.FIELD.FILENAME).regex(x));
 		Query query = Query.query(criteria);
-		long total = mongoTemplate.count(query, FileMongo.class);
+		long total = mongoTemplate.count(query, FileMongo.class, mongoProperties.COLLECTION.file());
 		query.with(param.pageable());
 
-		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class);
+		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.file());
 		List<File> files = buildFiles(contents);
 		return new Page<>(param, files, total);
 	}
@@ -171,7 +169,6 @@ public class FileService {
 		Set<String> uids = contents.stream().flatMap(x -> Stream.of(x.getMetadata().getCreated().getUid(), x.getMetadata().getLastModified().getUid()))
 			.filter(Objects::nonNull)
 			.collect(Collectors.toSet());
-//		Map<String, User> userMap = Collections.emptyMap();
 		Map<String, User> userMap = userClient.findMap(uids);
 
 		return contents

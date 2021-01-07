@@ -62,7 +62,7 @@ public class DictionaryService {
 					.collect(Collectors.toList())
 			)
 			.build();
-		dictionaryMongo = mongoTemplate.insert(dictionaryMongo, mongoProperties.COLLECTION.Dictionary);
+		dictionaryMongo = mongoTemplate.insert(dictionaryMongo, mongoProperties.COLLECTION.DICTIONARY);
 		log.debug("[insert] result-> {}", dictionaryMongo);
 
 		return find(client, params.getId());
@@ -95,7 +95,7 @@ public class DictionaryService {
 		Update update = Update.update(DictionaryMongo.FIELD.Name, param.getName())
 			.set(DictionaryMongo.FIELD.ITEMS.SELF, items);
 
-		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary);
+		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY);
 
 		log.debug("[modify] result-> {}", updateResult);
 		return find(client, param.getId());
@@ -115,7 +115,7 @@ public class DictionaryService {
 			.and(DictionaryMongo.FIELD.CODE).in(param.getIds());
 
 		Query query = Query.query(criteria);
-		return mongoTemplate.findAllAndRemove(query, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary)
+		return mongoTemplate.findAllAndRemove(query, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY)
 			.stream()
 			.filter(Objects::nonNull)
 			.map(DictionaryConverter::mapper)
@@ -149,7 +149,7 @@ public class DictionaryService {
 
 		Update update = new Update().addToSet(DictionaryMongo.FIELD.ITEMS.SELF).each(newItems);
 
-		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary);
+		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY);
 		log.debug("[dictionary][putItem] result-> : {}", updateResult);
 
 		return find(client, params.getId());
@@ -172,7 +172,7 @@ public class DictionaryService {
 			.set(DictionaryMongo.FIELD.ITEMS.$VALUE, param.getItem().getValue())
 			.set(DictionaryMongo.FIELD.ITEMS.$NAME, param.getItem().getName());
 
-		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary);
+		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY);
 		log.debug("[dictionary][putItem] result-> : {}", updateResult);
 
 		return find(client, param.getId());
@@ -210,7 +210,7 @@ public class DictionaryService {
 			);
 		update.pullAll(DictionaryMongo.FIELD.ITEMS.ID, param.getItemIds().toArray(new String[0]));
 
-		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary);
+		final UpdateResult updateResult = mongoTemplate.updateFirst(query, update, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY);
 		log.debug("[dictionary][deleteItem] result-> : {}", updateResult);
 
 		return find(client, param.getId());
@@ -227,7 +227,7 @@ public class DictionaryService {
 		Criteria criteria = buildDictionaryFindParamCriteria(client, param);
 		Query query = Query.query(criteria).with(defaultSort());
 
-		return mongoTemplate.find(query, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary)
+		return mongoTemplate.find(query, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY)
 			.stream()
 			.filter(Objects::nonNull)
 			.map(DictionaryConverter::mapper)
@@ -245,10 +245,10 @@ public class DictionaryService {
 		Criteria criteria = buildDictionaryFindParamCriteria(client, param);
 
 		Query query = Query.query(criteria);
-		long total = mongoTemplate.count(query, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary);
+		long total = mongoTemplate.count(query, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY);
 
 		query.with(param.pageable()).with(defaultSort());
-		List<Dictionary> contents = mongoTemplate.find(query, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary)
+		List<Dictionary> contents = mongoTemplate.find(query, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY)
 			.stream()
 			.filter(Objects::nonNull)
 			.map(DictionaryConverter::mapper)
@@ -259,7 +259,7 @@ public class DictionaryService {
 	Optional<Dictionary> find(String client, String id) {
 		Criteria criteria = Criteria.where(DictionaryMongo.FIELD.CLIENT).is(client).and(DictionaryMongo.FIELD.CODE).is(id);
 		Query query = Query.query(criteria);
-		return Optional.ofNullable(mongoTemplate.findOne(query, DictionaryMongo.class, mongoProperties.COLLECTION.Dictionary))
+		return Optional.ofNullable(mongoTemplate.findOne(query, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY))
 			.map(DictionaryConverter::mapper);
 	}
 

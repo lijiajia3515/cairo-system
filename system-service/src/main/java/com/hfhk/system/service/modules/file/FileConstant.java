@@ -4,6 +4,8 @@ package com.hfhk.system.service.modules.file;
  * 文件 常量
  */
 public class FileConstant {
+	public static final String DELIMITER = "/";
+
 	/**
 	 * 临时文件路径
 	 */

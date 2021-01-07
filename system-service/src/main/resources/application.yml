@@ -44,9 +44,9 @@ spring:
       field-naming-strategy: com.hfhk.cairo.mongo.data.mapping.model.UpperCamelCaseFieldNamingStrategy
       database: ${hfhk.mongo.database:hfhk-system}
       gridfs:
-        bucket: ${hfhk.mongo.grfs.database:system}
-        database: hfhk-store
-      host: ${hfhk.mongo.host:localhost}
+        database: ${hfhk.mongo.gridfs.database:hfhk-system}
+        bucket: ${hfhk.mongo.gridfs.bucket:hfhk}
+      host: ${hfhk.mongo.host:mongo}
       port: ${hfhk.mongo.port:27017}
       username: ${hfhk.mongo.username:hfhk}
       password: ${hfhk.mongo.password:Hfhk.1320.}

@@ -10,7 +10,7 @@ import java.util.Optional;
 public class FileConverter {
 	public static File fileMapper(FileMongo mongo, User createdUser, User lastModifiedUser) {
 		return File.builder()
-			.id(mongo.get_id())
+			.id(mongo.getId())
 			.path(mongo.getPath())
 			.filename(mongo.getFilename())
 			.contentType(mongo.getMetadata().get_contentType())

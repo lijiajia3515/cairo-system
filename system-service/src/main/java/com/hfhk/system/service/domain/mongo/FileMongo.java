@@ -6,7 +6,6 @@ import com.hfhk.cairo.mongo.data.mapping.model.AbstractUpperCamelCaseField;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.mongodb.core.mapping.Field;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
 
@@ -21,8 +20,7 @@ public class FileMongo {
 	/**
 	 * id
 	 */
-	@MongoId
-	private String _id;
+	private String id;
 
 	/**
 	 * client
@@ -94,7 +92,7 @@ public class FileMongo {
 		public final String CHUCK_SIZE = field("chuckSize");
 		public final String UPLOAD_DATE = field("uploadDate");
 		public final String MD5 = "md5";
-		public final Metadata Metadata = new Metadata(this, "Metadata");
+		public final Metadata METADATA = new Metadata(this, "metadata");
 
 		public static class Metadata extends AbstractUpperCamelCaseField.Metadata {
 			public Metadata() {

@@ -5,6 +5,7 @@ import com.hfhk.cairo.core.Constants;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.system.file.domain.File;
+import com.hfhk.system.file.domain.FileDeleteParam;
 import com.hfhk.system.file.domain.FileFindParam;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -45,7 +46,7 @@ public class FileApi {
 	@PostMapping("/Upload")
 	@PreAuthorize("isAuthenticated()")
 	public List<File> upload(@AuthenticationPrincipal AuthPrincipal principal,
-							 @RequestParam(defaultValue = "/") String path,
+							 @RequestParam(name = "Path", defaultValue = FileConstant.TEMPORARY_FILE_PATH) String path,
 							 @RequestPart Collection<MultipartFile> files) {
 		String client = principal.getClient();
 		return fileService.store(client, principal.getUser().getUid(), path, files);
@@ -58,12 +59,19 @@ public class FileApi {
 	 * @return x
 	 */
 	@PostMapping("/UploadTemporary")
-	@PermitAll
+	@PreAuthorize("isAuthenticated()")
 	public List<File> temporaryUpload(
 		@AuthenticationPrincipal AuthPrincipal principal, @RequestPart Collection<MultipartFile> files) {
 		String client = principal.getClient();
 		String path = FileConstant.TEMPORARY_FILE_PATH.concat("/").concat(Constants.SNOWFLAKE.nextIdStr());
 		return fileService.store(client, FileConstant.ANONYMOUS_UID, path, files);
+	}
+
+	@DeleteMapping
+	@PreAuthorize("isAuthenticated()")
+	public List<File> delete(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FileDeleteParam param) {
+		String client = principal.getClient();
+		return fileService.delete(client, FileConstant.ANONYMOUS_UID, param);
 	}
 
 	/**
@@ -85,6 +93,7 @@ public class FileApi {
 			IOUtils.copy(resource.getInputStream(), response.getOutputStream());
 		}
 	}
+
 
 	@PostMapping("/Find")
 	@PreAuthorize("isAuthenticated()")

@@ -18,24 +18,27 @@ public class HfhkMongoProperties {
 	 * collection
 	 */
 	public static class Collection {
-		private String Prefix = "system";
-		private String Bucket = "";
+		private String PREFIX = "system";
+		private final String BUCKET;
 
 		public Collection(org.springframework.boot.autoconfigure.mongo.MongoProperties properties) {
-			Bucket = properties.getGridfs().getBucket();
+			this.BUCKET = properties.getGridfs().getBucket();
 		}
 
 		public Collection(org.springframework.boot.autoconfigure.mongo.MongoProperties properties, String prefix) {
-			Bucket = properties.getGridfs().getBucket();
-			this.Prefix = prefix;
+			this.BUCKET = properties.getGridfs().getBucket();
+			this.PREFIX = prefix;
 		}
 
-		public final String Dictionary = collection("dictionaries");
+		public final String DICTIONARY = collection("dictionaries");
 		public final String FOLDER = collection("folders");
-		public final String FILE = Bucket.concat(".files");
 
 		private String collection(String collection) {
-			return Prefix.concat("_").concat(collection);
+			return PREFIX.concat("_").concat(collection);
+		}
+
+		public final String file(){
+			return BUCKET.concat(".files");
 		}
 	}
 }

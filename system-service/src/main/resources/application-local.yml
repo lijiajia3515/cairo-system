@@ -6,6 +6,9 @@ hfhk:
       secret: hfhk_system
   mongo:
     database: hfhk-system
+    gridfs:
+      database: hfhk-system
+      bucket: hfhk
     authentication-database: hfhk
     host: 192.168.30.21
     port: 27017
