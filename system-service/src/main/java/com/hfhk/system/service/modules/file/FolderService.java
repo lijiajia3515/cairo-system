@@ -40,8 +40,9 @@ public class FolderService {
 	 *
 	 * @param client client
 	 * @param param  param
+	 * @return new folder
 	 */
-	void save(@NotNull String client, @Validated FolderSaveParam param) {
+	Optional<Folder> save(@NotNull String client, @Validated FolderSaveParam param) {
 		Collection<String> paths = FolderUtil.paths(param.getPath());
 		if (!paths.isEmpty()) {
 			Criteria criteria = Criteria
@@ -59,7 +60,13 @@ public class FolderService {
 			Collection<FolderMongo> folders = paths.stream().map(path -> FolderConverter.mongoMapper(client, path)).collect(Collectors.toSet());
 			folders = mongoTemplate.insert(folders, mongoProperties.COLLECTION.FOLDER);
 			log.debug("[folder][create] result -> {}", folders);
+			return folders.stream()
+				.sorted(Comparator.comparing(FolderMongo::getPath).reversed())
+				.limit(1)
+				.flatMap(x -> buildFolders(Collections.singletonList(x)).stream())
+				.findFirst();
 		}
+		return Optional.empty(); // throw ex
 	}
 
 
@@ -68,8 +75,9 @@ public class FolderService {
 	 *
 	 * @param client client
 	 * @param param  param
+	 * @return modify rename
 	 */
-	void rename(@NotNull String client, @Validated FolderRenameParam param) {
+	Optional<Folder> rename(@NotNull String client, @Validated FolderRenameParam param) {
 		Criteria pathCriteria = Criteria.where(FolderMongo.FIELD.CLIENT).is(client).and(FolderMongo.FIELD.PATH).is(param.getPath());
 		Query pathQuery = Query.query(pathCriteria);
 
@@ -77,9 +85,9 @@ public class FolderService {
 		if (pathExists) {
 			DeleteResult pathDeleteResult = mongoTemplate.remove(pathQuery, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
 			log.debug("[folder][rename]-[pathDelete]->{}", pathDeleteResult);
-			save(client, FolderSaveParam.builder().path(param.getNewPath()).build());
+			return save(client, FolderSaveParam.builder().path(param.getNewPath()).build());
 		}
-
+		return Optional.empty();
 	}
 
 	/**

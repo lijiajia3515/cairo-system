@@ -8,6 +8,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/File/Folder")
@@ -20,16 +21,16 @@ public class FolderApi {
 
 	@PostMapping("/Save")
 	@PreAuthorize("isAuthenticated()")
-	public void save(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderSaveParam param) {
+	public Optional<Folder> save(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderSaveParam param) {
 		String client = principal.getClient();
-		folderService.save(client, param);
+		return folderService.save(client, param);
 	}
 
 	@PatchMapping("/Rename")
 	@PreAuthorize("isAuthenticated()")
-	public void put(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderRenameParam param) {
+	public Optional<Folder> put(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderRenameParam param) {
 		String client = principal.getClient();
-		folderService.rename(client, param);
+		return folderService.rename(client, param);
 	}
 
 	@DeleteMapping("/Delete")
