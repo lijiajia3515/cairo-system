@@ -1,10 +1,11 @@
-package com.hfhk.system.file.domain.request;
+package com.hfhk.system.file.domain;
 
 import com.hfhk.cairo.core.page.AbstractPage;
 import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -15,5 +16,5 @@ import java.io.Serializable;
 @Builder
 public class FolderFindParam extends AbstractPage<FolderFindParam> implements Serializable {
 
-	private String path;
+	private Set<String> paths;
 }

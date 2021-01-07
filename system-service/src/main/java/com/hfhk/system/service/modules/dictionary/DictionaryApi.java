@@ -133,4 +133,11 @@ public class DictionaryApi {
 		String client = principal.getClient();
 		return dictionaryService.findPage(client, param);
 	}
+
+	@GetMapping("/Find/{id}")
+	@PreAuthorize("isAuthenticated()")
+	public Optional<Dictionary> findById(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable String id) {
+		String client = principal.getClient();
+		return dictionaryService.find(client, id);
+	}
 }

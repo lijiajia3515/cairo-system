@@ -4,6 +4,8 @@ import com.hfhk.cairo.core.page.AbstractPage;
 import lombok.*;
 import lombok.experimental.Accessors;
 
+import java.util.Set;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Accessors(chain = true)
@@ -12,6 +14,6 @@ import lombok.experimental.Accessors;
 @AllArgsConstructor
 @Builder
 public class DictionaryFindParam extends AbstractPage<DictionaryFindParam> {
-	private String code;
-	private String name;
+	private Set<String> ids;
+	private String keyword;
 }

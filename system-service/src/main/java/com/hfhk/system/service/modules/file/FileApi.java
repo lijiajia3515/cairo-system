@@ -5,7 +5,7 @@ import com.hfhk.cairo.core.Constants;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.request.FileFindParam;
+import com.hfhk.system.file.domain.FileFindParam;
 import org.apache.commons.io.IOUtils;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.http.HttpHeaders;
@@ -37,17 +37,18 @@ public class FileApi {
 	/**
 	 * 上传文件
 	 *
-	 * @param principal  principal
-	 * @param folderPath 文件路径
-	 * @param files      文件
+	 * @param principal principal
+	 * @param path      path
+	 * @param files     文件
 	 * @return 1
 	 */
 	@PostMapping("/Upload")
 	@PreAuthorize("isAuthenticated()")
 	public List<File> upload(@AuthenticationPrincipal AuthPrincipal principal,
-							 @RequestParam(defaultValue = "/") String folderPath,
+							 @RequestParam(defaultValue = "/") String path,
 							 @RequestPart Collection<MultipartFile> files) {
-		return fileService.store(principal.getClient(), principal.getUser().getUid(), folderPath, files);
+		String client = principal.getClient();
+		return fileService.store(client, principal.getUser().getUid(), path, files);
 	}
 
 	/**
@@ -59,9 +60,10 @@ public class FileApi {
 	@PostMapping("/UploadTemporary")
 	@PermitAll
 	public List<File> temporaryUpload(
-		@RequestPart Collection<MultipartFile> files) {
-		String folderPath = "/temporary/".concat(Constants.SNOWFLAKE.nextIdStr());
-		return fileService.store("anonymous", "anonymous", folderPath, files);
+		@AuthenticationPrincipal AuthPrincipal principal, @RequestPart Collection<MultipartFile> files) {
+		String client = principal.getClient();
+		String path = FileConstant.TEMPORARY_FILE_PATH.concat("/").concat(Constants.SNOWFLAKE.nextIdStr());
+		return fileService.store(client, FileConstant.ANONYMOUS_UID, path, files);
 	}
 
 	/**
@@ -86,18 +88,14 @@ public class FileApi {
 
 	@PostMapping("/Find")
 	@PreAuthorize("isAuthenticated()")
-	public List<File> find(
-		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody(required = false) FileFindParam param) {
+	public List<File> find(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody(required = false) FileFindParam param) {
 		String client = principal.getClient();
 		return fileService.find(client, param);
 	}
 
 	@GetMapping("/FindPage")
 	@PreAuthorize("isAuthenticated()")
-	public Page<File> pageFind(
-		@AuthenticationPrincipal AuthPrincipal principal,
-		@RequestBody FileFindParam request) {
+	public Page<File> pageFind(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FileFindParam request) {
 		String client = principal.getClient();
 		return fileService.pageFind(client, request);
 	}

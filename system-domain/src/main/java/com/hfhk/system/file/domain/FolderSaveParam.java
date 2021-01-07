@@ -1,4 +1,4 @@
-package com.hfhk.system.file.domain.request;
+package com.hfhk.system.file.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +14,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FolderSaveParams implements Serializable {
+public class FolderSaveParam implements Serializable {
 	@Builder.Default
-	private String parentId = "/";
+	private String parent = "/";
 	private String path;
 }

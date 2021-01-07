@@ -1,4 +1,4 @@
-package com.hfhk.system.file.domain.request;
+package com.hfhk.system.file.domain;
 
 import com.hfhk.cairo.core.page.AbstractPage;
 import lombok.*;
@@ -15,6 +15,6 @@ import java.io.Serializable;
 @Builder
 public class FileFindParam extends AbstractPage<FileFindParam> implements Serializable {
 
-	private String filepath;
+	private String path;
 	private String filename;
 }

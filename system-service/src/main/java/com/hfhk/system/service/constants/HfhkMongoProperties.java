@@ -8,10 +8,10 @@ import org.springframework.stereotype.Component;
 
 @Component("hfhkMongoProperties")
 public class HfhkMongoProperties {
-	public final Collection Collection;
+	public final Collection COLLECTION;
 
 	public HfhkMongoProperties(org.springframework.boot.autoconfigure.mongo.MongoProperties properties) {
-		this.Collection = new Collection(properties);
+		this.COLLECTION = new Collection(properties);
 	}
 
 	/**
@@ -31,8 +31,8 @@ public class HfhkMongoProperties {
 		}
 
 		public final String Dictionary = collection("dictionaries");
-		public final String Folder = collection("folders");
-		public final String File = Bucket.concat(".files");
+		public final String FOLDER = collection("folders");
+		public final String FILE = Bucket.concat(".files");
 
 		private String collection(String collection) {
 			return Prefix.concat("_").concat(collection);

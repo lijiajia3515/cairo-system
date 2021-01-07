@@ -9,6 +9,9 @@ import lombok.experimental.Accessors;
 
 import java.util.Optional;
 
+/**
+ * File
+ */
 @Data
 @Accessors(chain = true)
 
@@ -25,7 +28,7 @@ public class File {
 	/**
 	 * 文件夹路径
 	 */
-	private String folderPath;
+	private String path;
 
 	/**
 	 * filename

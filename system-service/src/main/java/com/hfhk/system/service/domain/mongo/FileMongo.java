@@ -5,6 +5,8 @@ import com.hfhk.cairo.mongo.data.mapping.model.AbstractMongoField;
 import com.hfhk.cairo.mongo.data.mapping.model.AbstractUpperCamelCaseField;
 import lombok.*;
 import lombok.experimental.Accessors;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.LocalDateTime;
 
@@ -19,6 +21,7 @@ public class FileMongo {
 	/**
 	 * id
 	 */
+	@MongoId
 	private String _id;
 
 	/**
@@ -29,45 +32,46 @@ public class FileMongo {
 	/**
 	 * folder path
 	 */
-	private String folderPath;
+	private String path;
 
 	/**
 	 * filename
 	 */
+	@Field("filename")
 	private String filename;
 
 	/**
 	 * 文件大小
 	 */
-	@org.springframework.data.mongodb.core.mapping.Field("length")
+	@Field("length")
 	private Long length;
 
 	/**
 	 * chunk Size
 	 */
-	@org.springframework.data.mongodb.core.mapping.Field("chunkSize")
+	@Field("chunkSize")
 	private Integer chunkSize;
 
 	/**
 	 * 文件时间
 	 */
-	@org.springframework.data.mongodb.core.mapping.Field("uploadDate")
+	@Field("uploadDate")
 	private LocalDateTime uploadDate;
 
 	/**
 	 * md5
 	 */
-	@org.springframework.data.mongodb.core.mapping.Field("md5")
+	@Field("md5")
 	private String md5;
 
 	/**
 	 * Metadata
 	 */
 	@Builder.Default
-	@org.springframework.data.mongodb.core.mapping.Field("metadata")
+	@Field("metadata")
 	private Metadata metadata = new Metadata();
 
-	public static final Field FIELD = new Field();
+	public static final MongoField FIELD = new MongoField();
 
 	@Data
 	@EqualsAndHashCode(callSuper = true)
@@ -82,9 +86,9 @@ public class FileMongo {
 		private String _contentType;
 	}
 
-	public static class Field extends AbstractUpperCamelCaseField {
-		public final String CLIENT = field("Client");
-		public final String FOLDER_PATH = field("FolderPath");
+	public static class MongoField extends AbstractUpperCamelCaseField {
+		public final String CLIENT = field("client");
+		public final String PATH = field("path");
 		public final String FILENAME = field("filename");
 		public final String LENGTH = field("length");
 		public final String CHUCK_SIZE = field("chuckSize");

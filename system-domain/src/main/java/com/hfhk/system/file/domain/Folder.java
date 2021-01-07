@@ -26,7 +26,7 @@ public class Folder implements TreeNode<String, Folder>, Serializable {
 	/**
 	 * parentId
 	 */
-	private String parentId;
+	private String parent;
 
 	/**
 	 * 子集
@@ -41,7 +41,7 @@ public class Folder implements TreeNode<String, Folder>, Serializable {
 
 	@Override
 	public String parentId() {
-		return parentId;
+		return parent;
 	}
 
 	@Override
