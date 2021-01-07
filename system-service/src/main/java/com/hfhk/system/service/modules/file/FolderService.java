@@ -1,10 +1,9 @@
 package com.hfhk.system.service.modules.file;
 
+import com.hfhk.auth.client.UserClientCredentialsClient;
+import com.hfhk.auth.domain.user.User;
 import com.hfhk.cairo.core.page.Page;
-import com.hfhk.system.file.domain.Folder;
-import com.hfhk.system.file.domain.FolderDeleteParam;
-import com.hfhk.system.file.domain.FolderFindParam;
-import com.hfhk.system.file.domain.FolderRenameParam;
+import com.hfhk.system.file.domain.*;
 import com.hfhk.system.service.constants.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.FolderMongo;
 import com.mongodb.client.result.DeleteResult;
@@ -18,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 文件夹
@@ -27,20 +27,22 @@ import java.util.stream.Collectors;
 public class FolderService {
 	private final HfhkMongoProperties mongoProperties;
 	private final MongoTemplate mongoTemplate;
+	private final UserClientCredentialsClient userClient;
 
-	public FolderService(HfhkMongoProperties mongoProperties, MongoTemplate mongoTemplate) {
+	public FolderService(HfhkMongoProperties mongoProperties, MongoTemplate mongoTemplate, UserClientCredentialsClient userClient) {
 		this.mongoProperties = mongoProperties;
 		this.mongoTemplate = mongoTemplate;
+		this.userClient = userClient;
 	}
 
 	/**
 	 * 创建
 	 *
 	 * @param client client
-	 * @param path   path
+	 * @param param  param
 	 */
-	void save(String client, String path) {
-		Collection<String> paths = FolderUtil.paths(path);
+	void save(@NotNull String client, @Validated FolderSaveParam param) {
+		Collection<String> paths = FolderUtil.paths(param.getPath());
 		if (!paths.isEmpty()) {
 			Criteria criteria = Criteria
 				.where(FolderMongo.FIELD.CLIENT).is(client)
@@ -54,8 +56,8 @@ public class FolderService {
 				.collect(Collectors.toSet());
 
 			paths.removeAll(existsPaths);
-			Collection<FolderMongo> folders = paths.stream().map(x -> FolderConverter.mongoMapper(client, path)).collect(Collectors.toSet());
-			folders = mongoTemplate.insertAll(folders);
+			Collection<FolderMongo> folders = paths.stream().map(path -> FolderConverter.mongoMapper(client, path)).collect(Collectors.toSet());
+			folders = mongoTemplate.insert(folders, mongoProperties.COLLECTION.FOLDER);
 			log.debug("[folder][create] result -> {}", folders);
 		}
 	}
@@ -75,7 +77,7 @@ public class FolderService {
 		if (pathExists) {
 			DeleteResult pathDeleteResult = mongoTemplate.remove(pathQuery, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
 			log.debug("[folder][rename]-[pathDelete]->{}", pathDeleteResult);
-			save(client, param.getNewPath());
+			save(client, FolderSaveParam.builder().path(param.getNewPath()).build());
 		}
 
 	}
@@ -85,8 +87,9 @@ public class FolderService {
 	 *
 	 * @param client client
 	 * @param param  param
+	 * @return deleted folders
 	 */
-	void delete(@Validated String client, @Validated FolderDeleteParam param) {
+	List<Folder> delete(@Validated String client, @Validated FolderDeleteParam param) {
 		Criteria criteria = Criteria
 			.where(FolderMongo.FIELD.CLIENT).is(client)
 			.and(FolderMongo.FIELD.PATH).in(param.getPaths());
@@ -94,8 +97,8 @@ public class FolderService {
 
 		List<FolderMongo> deleteFolders = mongoTemplate.findAllAndRemove(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
 		log.debug("[folder][delete]-> {}", deleteFolders);
+		return buildFolders(deleteFolders);
 	}
-
 
 	/**
 	 * 查询
@@ -104,18 +107,12 @@ public class FolderService {
 	 * @param param  param
 	 * @return filepath
 	 */
-	Page<String> findPage(@NotNull String client, @Validated FolderFindParam param) {
+	List<Folder> find(@NotNull String client, @Validated FolderFindParam param) {
 		Criteria criteria = buildFolderCriteria(client, param);
 		Query query = Query.query(criteria);
-		query.fields().include(FolderMongo.FIELD.PATH);
-		long total = mongoTemplate.count(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
 
-		query.with(param.pageable());
-		List<String> paths = mongoTemplate.find(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER).stream()
-			.map(FolderMongo::getPath).sorted().collect(Collectors.toList());
-
-		return new Page<>(param, paths, total);
-
+		List<FolderMongo> contents = mongoTemplate.find(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
+		return buildFolders(contents);
 	}
 
 	/**
@@ -123,17 +120,32 @@ public class FolderService {
 	 *
 	 * @param client client
 	 * @param param  param
-	 * @return x
+	 * @return filepath
+	 */
+	Page<Folder> findPage(@NotNull String client, @Validated FolderFindParam param) {
+		Criteria criteria = buildFolderCriteria(client, param);
+		Query query = Query.query(criteria);
+		long total = mongoTemplate.count(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
+
+		query.with(param.pageable());
+		List<FolderMongo> contents = mongoTemplate.find(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
+		List<Folder> folders = buildFolders(contents);
+
+		return new Page<>(param, folders, total);
+	}
+
+	/**
+	 * find
+	 *
+	 * @param client client
+	 * @param param  param
+	 * @return folder list
 	 */
 	List<Folder> findTree(@NotNull String client, @Validated FolderFindParam param) {
 		Criteria criteria = buildFolderCriteria(client, param);
 		Query query = Query.query(criteria);
-		Set<Folder> folders = mongoTemplate.find(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER)
-			.stream()
-			.map(FolderMongo::getPath)
-			.flatMap(x -> FolderUtil.paths(x).stream())
-			.flatMap(x -> FolderConverter.folderOptional(x).stream())
-			.collect(Collectors.toSet());
+		List<FolderMongo> contents = mongoTemplate.find(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
+		List<Folder> folders = buildFolders(contents);
 
 		return FolderConverter.treeFolderMapper(folders);
 	}
@@ -149,6 +161,18 @@ public class FolderService {
 				criteria.orOperator(pathCriteria);
 			});
 		return criteria;
+	}
+
+	List<Folder> buildFolders(List<FolderMongo> contents) {
+		Set<String> uids = contents.stream().flatMap(x -> Stream.of(x.getMetadata().getCreated().getUid(), x.getMetadata().getLastModified().getUid()))
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
+		Map<String, User> userMap = userClient.findMap(uids);
+
+		return contents
+			.stream()
+			.map(x -> FolderConverter.folderMapper(x, userMap.get(x.getMetadata().getCreated().getUid()), userMap.get(x.getMetadata().getLastModified().getUid())))
+			.collect(Collectors.toList());
 	}
 
 }

@@ -15,10 +15,10 @@ public interface FileRequestClient {
 	/**
 	 * 创建文件夹
 	 *
-	 * @param path 路径
+	 * @param param param
 	 */
 	@PostMapping(path = "/Folder/Save")
-	void createFolder(@RequestParam(name = "Path") String path);
+	void createFolder(@RequestBody FolderSaveParam param);
 
 	/**
 	 * 重名
@@ -47,7 +47,7 @@ public interface FileRequestClient {
 
 
 	//file
-	@PostMapping(path = "/Upload", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping(path = "/Upload", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	List<File> uploadFile(@RequestParam(name = "Path", defaultValue = "/") String folderPath,
 						  @RequestPart(name = "Files") MultipartFile[] files);
 

@@ -1,5 +1,6 @@
 package com.hfhk.system.file.domain;
 
+import com.hfhk.auth.domain.Metadata;
 import com.hfhk.cairo.core.tree.TreeNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,9 +25,11 @@ public class Folder implements TreeNode<String, Folder>, Serializable {
 	private String id;
 
 	/**
-	 * parentId
+	 * parent
 	 */
 	private String parent;
+
+	private Metadata metadata;
 
 	/**
 	 * 子集

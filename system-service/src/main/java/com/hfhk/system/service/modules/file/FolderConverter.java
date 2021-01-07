@@ -1,5 +1,7 @@
 package com.hfhk.system.service.modules.file;
 
+import com.hfhk.auth.domain.Metadata;
+import com.hfhk.auth.domain.user.User;
 import com.hfhk.cairo.core.tree.TreeConverter;
 import com.hfhk.system.file.domain.Folder;
 import com.hfhk.system.service.domain.mongo.FolderMongo;
@@ -21,6 +23,27 @@ public class FolderConverter {
 		return Folder.builder()
 			.id(path)
 			.parent(parentPath)
+			.build();
+	}
+
+	public static Folder folderMapper(FolderMongo folder, User createdUser, User lastModifiedUser) {
+		String parentPath = FolderUtil.parentPath(folder.getPath());
+		return Folder.builder()
+			.id(folder.getPath())
+			.parent(parentPath)
+			.metadata(Metadata.builder()
+				.created(
+					Metadata.Action.builder()
+						.at(folder.getMetadata().getCreated().getAt())
+						.user(createdUser)
+						.build())
+				.lastModified(
+					Metadata.Action.builder()
+						.at(folder.getMetadata().getLastModified().getAt())
+						.user(lastModifiedUser)
+						.build())
+				.build()
+			)
 			.build();
 	}
 

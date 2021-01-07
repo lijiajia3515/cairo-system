@@ -2,10 +2,7 @@ package com.hfhk.system.service.modules.file;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
-import com.hfhk.system.file.domain.Folder;
-import com.hfhk.system.file.domain.FolderDeleteParam;
-import com.hfhk.system.file.domain.FolderFindParam;
-import com.hfhk.system.file.domain.FolderRenameParam;
+import com.hfhk.system.file.domain.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,9 +20,9 @@ public class FolderApi {
 
 	@PostMapping("/Save")
 	@PreAuthorize("isAuthenticated()")
-	public void save(@AuthenticationPrincipal AuthPrincipal principal, @RequestParam("Path") String path) {
+	public void save(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderSaveParam param) {
 		String client = principal.getClient();
-		folderService.save(client, path);
+		folderService.save(client, param);
 	}
 
 	@PatchMapping("/Rename")
@@ -37,19 +34,26 @@ public class FolderApi {
 
 	@DeleteMapping("/Delete")
 	@PreAuthorize("isAuthenticated()")
-	public void delete(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderDeleteParam param) {
+	public List<Folder> delete(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderDeleteParam param) {
 		String client = principal.getClient();
-		folderService.delete(client, param);
+		return folderService.delete(client, param);
 	}
 
-	@GetMapping("/Find")
+	@PostMapping("/Find")
 	@PreAuthorize("isAuthenticated()")
-	public Page<String> find(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderFindParam param) {
+	public Page<Folder> find(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderFindParam param) {
 		String client = principal.getClient();
 		return folderService.findPage(client, param);
 	}
 
-	@GetMapping("/FindTree")
+	@PostMapping("/FindPage")
+	@PreAuthorize("isAuthenticated()")
+	public Page<Folder> findPage(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderFindParam param) {
+		String client = principal.getClient();
+		return folderService.findPage(client, param);
+	}
+
+	@PostMapping("/FindTree")
 	@PreAuthorize("isAuthenticated()")
 	public List<Folder> treeFind(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderFindParam param) {
 		String client = principal.getClient();

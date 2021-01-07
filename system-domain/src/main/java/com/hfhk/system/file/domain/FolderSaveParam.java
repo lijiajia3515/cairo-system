@@ -15,7 +15,5 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 public class FolderSaveParam implements Serializable {
-	@Builder.Default
-	private String parent = "/";
 	private String path;
 }

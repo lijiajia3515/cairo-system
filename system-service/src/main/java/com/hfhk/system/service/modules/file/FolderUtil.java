@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FolderUtil {
 	public static final String DELIMITER = FileConstant.DELIMITER;
@@ -15,7 +16,7 @@ public class FolderUtil {
 		AtomicReference<String> parent = new AtomicReference<>(DELIMITER);
 		return Optional.ofNullable(path).map(x -> x.split(DELIMITER))
 			.stream()
-			.flatMap(x -> Arrays.stream(x.clone()))
+			.flatMap(Arrays::stream)
 			.filter(x -> !x.trim().isBlank())
 			.map(x -> parent.get().equals(DELIMITER) ? DELIMITER.concat(x) : parent.get().concat(DELIMITER).concat(x))
 			.peek(parent::set)
@@ -24,8 +25,11 @@ public class FolderUtil {
 
 	public static String parentPath(String path) {
 		return Optional.ofNullable(path)
-			.filter(x -> !x.equals(DELIMITER) && x.lastIndexOf(DELIMITER) > 0)
-			.map(x -> x.substring(0, x.lastIndexOf(DELIMITER)))
+			.filter(x -> !x.equals(DELIMITER) && x.startsWith(DELIMITER))
+			.map(filterPath -> {
+				String parentPath = filterPath.substring(0, filterPath.lastIndexOf(DELIMITER));
+				return parentPath.isEmpty() ? DELIMITER : parentPath;
+			})
 			.orElse(Constants.SNOWFLAKE.nextIdStr());
 	}
 }
