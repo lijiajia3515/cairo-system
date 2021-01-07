@@ -7,10 +7,6 @@ import org.springframework.cloud.consul.ConditionalOnConsulEnabled;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableDiscoveryClient
-@EnableFeignClients(
-	basePackages = {"com.hfhk.**.client"}
-)
 public class ServiceSystemApp {
 
 	public static void main(String[] args) {

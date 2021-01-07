@@ -1,7 +1,7 @@
 package com.hfhk.system.service.modules.file;
 
 import com.hfhk.auth.client.UserClientCredentialsClient;
-import com.hfhk.auth.domain.Metadata;
+import com.hfhk.auth.domain.user.User;
 import com.hfhk.cairo.core.exception.BusinessException;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.mongo.data.Created;
@@ -23,10 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -143,10 +140,8 @@ public class FileService {
 			});
 
 		Query query = Query.query(criteria);
-		return mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.FILE)
-			.stream()
-			.flatMap(x -> optionalFile(x).stream())
-			.collect(Collectors.toList());
+		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.FILE);
+		return buildFiles(contents);
 
 	}
 
@@ -168,13 +163,21 @@ public class FileService {
 		query.with(param.pageable());
 
 		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class);
-		Set<String> createdUids = contents.stream().map(x -> x.getMetadata().getCreated().getUid()).collect(Collectors.toSet());
-		Set<String> lastModifiedUids = contents.stream().map(x -> x.getMetadata().getLastModified().getUid()).collect(Collectors.toSet());
-//		userClient
-//		List<File> files = mongoTemplate.find(query, FileMongo.class).stream()
-//			.map(x -> FileConverter.fileMapper(x)).collect(Collectors.toList());
-//		return new Page<>(param, files, total);
-		return null;
+		List<File> files = buildFiles(contents);
+		return new Page<>(param, files, total);
+	}
+
+	List<File> buildFiles(List<FileMongo> contents) {
+		Set<String> uids = contents.stream().flatMap(x -> Stream.of(x.getMetadata().getCreated().getUid(), x.getMetadata().getLastModified().getUid()))
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
+//		Map<String, User> userMap = Collections.emptyMap();
+		Map<String, User> userMap = userClient.findMap(uids);
+
+		return contents
+			.stream()
+			.map(x -> FileConverter.fileMapper(x, userMap.get(x.getMetadata().getCreated().getUid()), userMap.get(x.getMetadata().getLastModified().getUid())))
+			.collect(Collectors.toList());
 	}
 
 
