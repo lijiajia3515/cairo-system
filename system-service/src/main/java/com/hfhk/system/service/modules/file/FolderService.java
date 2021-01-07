@@ -4,6 +4,7 @@ import com.hfhk.cairo.core.page.Page;
 import com.hfhk.system.file.domain.Folder;
 import com.hfhk.system.file.domain.FolderDeleteParam;
 import com.hfhk.system.file.domain.FolderFindParam;
+import com.hfhk.system.file.domain.FolderRenameParam;
 import com.hfhk.system.service.constants.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.FolderMongo;
 import com.mongodb.client.result.DeleteResult;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,19 +64,18 @@ public class FolderService {
 	/**
 	 * 修改
 	 *
-	 * @param client  client
-	 * @param path    path
-	 * @param newPath new file path
+	 * @param client client
+	 * @param param  param
 	 */
-	void rename(String client, String path, String newPath) {
-		Criteria pathCriteria = Criteria.where(FolderMongo.FIELD.CLIENT).is(client).and(FolderMongo.FIELD.CLIENT).is(path);
+	void rename(@NotNull String client, @Validated FolderRenameParam param) {
+		Criteria pathCriteria = Criteria.where(FolderMongo.FIELD.CLIENT).is(client).and(FolderMongo.FIELD.PATH).is(param.getPath());
 		Query pathQuery = Query.query(pathCriteria);
 
 		boolean pathExists = mongoTemplate.exists(pathQuery, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
 		if (pathExists) {
 			DeleteResult pathDeleteResult = mongoTemplate.remove(pathQuery, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
 			log.debug("[folder][rename]-[pathDelete]->{}", pathDeleteResult);
-			save(client, newPath);
+			save(client, param.getNewPath());
 		}
 
 	}
@@ -111,10 +108,10 @@ public class FolderService {
 		Criteria criteria = buildFolderCriteria(client, param);
 		Query query = Query.query(criteria);
 		query.fields().include(FolderMongo.FIELD.PATH);
-		long total = mongoTemplate.count(query, FolderMongo.class);
+		long total = mongoTemplate.count(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER);
 
 		query.with(param.pageable());
-		List<String> paths = mongoTemplate.find(query, FolderMongo.class).stream()
+		List<String> paths = mongoTemplate.find(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER).stream()
 			.map(FolderMongo::getPath).sorted().collect(Collectors.toList());
 
 		return new Page<>(param, paths, total);
@@ -131,7 +128,7 @@ public class FolderService {
 	List<Folder> findTree(@NotNull String client, @Validated FolderFindParam param) {
 		Criteria criteria = buildFolderCriteria(client, param);
 		Query query = Query.query(criteria);
-		Set<Folder> folders = mongoTemplate.find(query, FolderMongo.class)
+		Set<Folder> folders = mongoTemplate.find(query, FolderMongo.class, mongoProperties.COLLECTION.FOLDER)
 			.stream()
 			.map(FolderMongo::getPath)
 			.flatMap(x -> FolderUtil.paths(x).stream())

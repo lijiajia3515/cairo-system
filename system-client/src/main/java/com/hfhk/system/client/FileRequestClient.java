@@ -1,88 +1,73 @@
 package com.hfhk.system.client;
 
 import com.hfhk.cairo.core.page.Page;
-import com.hfhk.system.file.domain.File;
-import com.hfhk.system.file.domain.Folder;
+import com.hfhk.system.file.domain.*;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "service_system_v1", path = "/service", contextId = "serviceSystemV1FileRequestClient")
+@FeignClient(name = "service-system-v1", path = "/File", contextId = "serviceSystemV1FileRequestClient")
 public interface FileRequestClient {
-
-	/**
-	 * 查找文件夹
-	 *
-	 * @param folderPath 路径
-	 * @return folder tree list
-	 */
-	@GetMapping(path = "/folder/find_tree")
-	List<Folder> treeFindFolder(@RequestParam(name = "folderPath") String folderPath);
 
 	/**
 	 * 创建文件夹
 	 *
-	 * @param folderPath 文件夹路径
+	 * @param path 路径
 	 */
-	@PostMapping(path = "/folder/create")
-	void createFolder(@RequestParam(name = "folderPath") String folderPath);
+	@PostMapping(path = "/Folder/Save")
+	void createFolder(@RequestParam(name = "Path") String path);
 
 	/**
 	 * 重名
 	 *
-	 * @param folderPath    路径
-	 * @param newFolderPath 新路径
+	 * @param param param
 	 */
-	@PutMapping(path = "/folder/rename")
-	void renameFolder(@RequestParam(name = "folderPath") String folderPath, @RequestParam(name = "newFolderPath") String newFolderPath);
+	@PutMapping(path = "/Folder/Rename")
+	void renameFolder(@RequestBody FolderRenameParam param);
 
 	/**
 	 * 删除 文件夹
 	 *
-	 * @param folderPath 路径
+	 * @param param param
 	 */
-	@DeleteMapping(path = "/folder/delete")
-	void deleteFolder(@RequestParam(name = "folderPath") String folderPath);
-
-
-	// file divide line
-
-	@PostMapping(path = "/file/upload", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	List<File> uploadFile(@RequestParam(name = "folderPath", defaultValue = "/") String folderPath,
-						  @RequestPart(name = "files") MultipartFile[] files);
+	@DeleteMapping(path = "/Folder/Delete")
+	void deleteFolder(@RequestBody FolderDeleteParam param);
 
 	/**
-	 * 删除 文件夹
+	 * 查找文件夹
 	 *
-	 * @param fileIds 文件id
+	 * @param param param
+	 * @return folder tree list
 	 */
-	@DeleteMapping(path = "/file/delete")
-	void deleteFile(@RequestParam(name = "fileIds") String[] fileIds);
+	@GetMapping(path = "/Folder/FindTree")
+	List<Folder> treeFindFolder(@RequestBody FolderFindParam param);
+
+
+	//file
+	@PostMapping(path = "/Upload", produces = {MediaType.APPLICATION_JSON_UTF8_VALUE}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	List<File> uploadFile(@RequestParam(name = "Path", defaultValue = "/") String folderPath,
+						  @RequestPart(name = "Files") MultipartFile[] files);
 
 	/**
 	 * 文件 查询(分页)
 	 *
-	 * @param page       page
-	 * @param folderPath folderPath
-	 * @param filename   filename
+	 * @param param param
 	 * @return file list page
 	 */
-	@GetMapping(path = "/file/find_page")
-	Page<File> pageFindFile(Pageable page, @RequestParam("folderPath") String folderPath, @RequestParam("filename") String filename);
+	@PostMapping(path = "/FindPage")
+	Page<File> pageFindFile(@RequestBody FileFindParam param);
 
 
 	/**
 	 * 文件查询
 	 *
-	 * @param folderPath folderPath
-	 * @param filename   filename
+	 * @param param param
 	 * @return file list
 	 */
-	@GetMapping(path = "/file/find")
-	List<File> findFile(@RequestParam("folderPath") String folderPath, @RequestParam("filename") String filename);
+	@PostMapping(path = "/Find")
+	List<File> findFile(@RequestBody FileFindParam param);
 
 }

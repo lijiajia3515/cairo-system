@@ -40,7 +40,7 @@ public class Folder implements TreeNode<String, Folder>, Serializable {
 	}
 
 	@Override
-	public String parentId() {
+	public String parent() {
 		return parent;
 	}
 

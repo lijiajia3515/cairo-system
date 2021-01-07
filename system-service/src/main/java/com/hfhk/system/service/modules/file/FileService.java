@@ -26,7 +26,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * File Service
@@ -55,16 +57,16 @@ public class FileService {
 	/**
 	 * 文件上传
 	 *
-	 * @param client     client
-	 * @param uid        uid
-	 * @param folderPath folderPath
-	 * @param files      files
+	 * @param client client
+	 * @param uid    uid
+	 * @param path   path
+	 * @param files  files
 	 * @return file list
 	 */
-	List<File> store(String client, String uid, String folderPath, Collection<MultipartFile> files) {
-		return files
+	List<File> store(String client, String uid, String path, Collection<MultipartFile> files) {
+		List<String> ids = files
 			.parallelStream()
-			.flatMap(file -> {
+			.map(file -> {
 				String filename = file.getOriginalFilename();
 				String contentType = file.getContentType();
 
@@ -76,17 +78,24 @@ public class FileService {
 					Query query = Query.query(Criteria.where(FileMongo.FIELD._ID).is(id));
 					Update update = new Update()
 						.set(FileMongo.FIELD.CLIENT, client)
-						.set(FileMongo.FIELD.PATH, folderPath)
+						.set(FileMongo.FIELD.PATH, path)
 						.set(FileMongo.FIELD.METADATA.CREATED.SELF, created)
 						.set(FileMongo.FIELD.METADATA.LAST_MODIFIED.SELF, lastModified);
 					mongoTemplate.updateFirst(query, update, FileMongo.class, mongoProperties.COLLECTION.FILE);
-					return Optional.ofNullable(mongoTemplate.findById(id, FileMongo.class))
-						.flatMap(this::optionalFile).stream();
+					return id;
 				} catch (IOException e) {
 					throw new BusinessException(FileBusiness.UploadField, e);
 				}
-			}).collect(Collectors.toList());
-
+			})
+			.collect(Collectors.toList());
+		Criteria criteria = Criteria.where(FileMongo.FIELD._ID).in(ids);
+		Query query = Query.query(criteria);
+		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.FILE);
+		Set<String> uids = contents.stream()
+			.flatMap(x -> Stream.of(x.getMetadata().getCreated().getUid(), x.getMetadata().getLastModified().getUid()))
+			.collect(Collectors.toSet());
+		// userClient.find
+		return null;
 	}
 
 	/**
@@ -149,7 +158,7 @@ public class FileService {
 	 * @param param  param
 	 * @return file list page
 	 */
-	Page<File> pageFind(String client, FileFindParam param) {
+	Page<File> findPage(String client, FileFindParam param) {
 		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
 
 		Optional.ofNullable(param.getPath()).ifPresent(x -> criteria.and(FileMongo.FIELD.PATH).regex(x));
@@ -157,38 +166,16 @@ public class FileService {
 		Query query = Query.query(criteria);
 		long total = mongoTemplate.count(query, FileMongo.class);
 		query.with(param.pageable());
-		List<File> files = mongoTemplate.find(query, FileMongo.class).stream().flatMap(x -> optionalFile(x).stream()).collect(Collectors.toList());
-		return new Page<>(param, files, total);
+
+		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class);
+		Set<String> createdUids = contents.stream().map(x -> x.getMetadata().getCreated().getUid()).collect(Collectors.toSet());
+		Set<String> lastModifiedUids = contents.stream().map(x -> x.getMetadata().getLastModified().getUid()).collect(Collectors.toSet());
+//		userClient
+//		List<File> files = mongoTemplate.find(query, FileMongo.class).stream()
+//			.map(x -> FileConverter.fileMapper(x)).collect(Collectors.toList());
+//		return new Page<>(param, files, total);
+		return null;
 	}
 
-	private Optional<File> optionalFile(FileMongo file) {
-		return Optional.ofNullable(file)
-			.map(x ->
-				File.builder()
-					.id(x.get_id())
-					.path(x.getPath())
-					.filename(x.getFilename())
-					.contentType(x.getMetadata().get_contentType())
-					.length(x.getLength())
-					.md5(x.getMd5())
-					.chuckSize(x.getChunkSize())
-					.metadata(Metadata.builder()
-						.created(
-							Metadata.Action.builder()
-								.user(userClient.findById(x.getMetadata().getCreated().getUid()))
-								.at(x.getMetadata().getCreated().getAt())
-								.build()
-						).lastModified(
-							Metadata.Action.builder()
-								.user(userClient.findById(x.getMetadata().getLastModified().getUid()))
-								.at(x.getMetadata().getLastModified().getAt())
-								.build()
-						)
-						.build()
-					)
-					.build()
-			);
-
-	}
 
 }

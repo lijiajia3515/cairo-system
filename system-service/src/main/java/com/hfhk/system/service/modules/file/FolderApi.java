@@ -5,6 +5,7 @@ import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.system.file.domain.Folder;
 import com.hfhk.system.file.domain.FolderDeleteParam;
 import com.hfhk.system.file.domain.FolderFindParam;
+import com.hfhk.system.file.domain.FolderRenameParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +23,16 @@ public class FolderApi {
 
 	@PostMapping("/Save")
 	@PreAuthorize("isAuthenticated()")
-	public void save(@AuthenticationPrincipal AuthPrincipal principal, String path) {
+	public void save(@AuthenticationPrincipal AuthPrincipal principal, @RequestParam("Path") String path) {
 		String client = principal.getClient();
 		folderService.save(client, path);
 	}
 
 	@PatchMapping("/Rename")
 	@PreAuthorize("isAuthenticated()")
-	public void put(@AuthenticationPrincipal AuthPrincipal principal, String path, String newPath) {
+	public void put(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderRenameParam param) {
 		String client = principal.getClient();
-		folderService.rename(client, path, newPath);
+		folderService.rename(client, param);
 	}
 
 	@DeleteMapping("/Delete")

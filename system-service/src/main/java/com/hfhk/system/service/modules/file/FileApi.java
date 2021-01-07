@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 文件api
+ * file api
  */
 @RestController
 @RequestMapping("/File")
@@ -88,16 +88,16 @@ public class FileApi {
 
 	@PostMapping("/Find")
 	@PreAuthorize("isAuthenticated()")
-	public List<File> find(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody(required = false) FileFindParam param) {
+	public List<File> find(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FileFindParam param) {
 		String client = principal.getClient();
 		return fileService.find(client, param);
 	}
 
-	@GetMapping("/FindPage")
+	@PostMapping("/FindPage")
 	@PreAuthorize("isAuthenticated()")
-	public Page<File> pageFind(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FileFindParam request) {
+	public Page<File> findPage(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FileFindParam param) {
 		String client = principal.getClient();
-		return fileService.pageFind(client, request);
+		return fileService.findPage(client, param);
 	}
 
 
