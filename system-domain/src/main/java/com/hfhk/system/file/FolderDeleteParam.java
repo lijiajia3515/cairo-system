@@ -1,4 +1,4 @@
-package com.hfhk.system.file.domain;
+package com.hfhk.system.file;
 
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -13,8 +13,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FolderRenameParam implements Serializable {
+public class FolderDeleteParam implements Serializable {
 
-	private String path;
-	private String newPath;
+	private Set<String> paths;
 }

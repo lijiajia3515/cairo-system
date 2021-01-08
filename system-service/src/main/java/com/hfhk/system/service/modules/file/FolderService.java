@@ -3,7 +3,7 @@ package com.hfhk.system.service.modules.file;
 import com.hfhk.auth.client.UserClientCredentialsClient;
 import com.hfhk.auth.domain.user.User;
 import com.hfhk.cairo.core.page.Page;
-import com.hfhk.system.file.domain.*;
+import com.hfhk.system.file.*;
 import com.hfhk.system.service.constants.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.FolderMongo;
 import com.mongodb.client.result.DeleteResult;

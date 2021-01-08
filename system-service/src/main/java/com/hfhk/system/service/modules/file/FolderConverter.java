@@ -3,7 +3,7 @@ package com.hfhk.system.service.modules.file;
 import com.hfhk.auth.domain.Metadata;
 import com.hfhk.auth.domain.user.User;
 import com.hfhk.cairo.core.tree.TreeConverter;
-import com.hfhk.system.file.domain.Folder;
+import com.hfhk.system.file.Folder;
 import com.hfhk.system.service.domain.mongo.FolderMongo;
 
 import java.util.Collection;

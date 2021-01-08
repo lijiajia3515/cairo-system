@@ -2,8 +2,7 @@ package com.hfhk.system.service.modules.dictionary;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
-import com.hfhk.system.dictionary.domain.Dictionary;
-import com.hfhk.system.service.modules.dictionary.domain.request.*;
+import com.hfhk.system.dictionary.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -140,4 +139,5 @@ public class DictionaryApi {
 		String client = principal.getClient();
 		return dictionaryService.find(client, id);
 	}
+
 }

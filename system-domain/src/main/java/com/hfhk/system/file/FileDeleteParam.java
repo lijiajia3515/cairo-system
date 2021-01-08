@@ -1,4 +1,4 @@
-package com.hfhk.system.file.domain;
+package com.hfhk.system.file;
 
 import com.hfhk.cairo.core.page.AbstractPage;
 import lombok.*;

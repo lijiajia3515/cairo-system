@@ -1,7 +1,7 @@
 package com.hfhk.system.client;
 
 import com.hfhk.cairo.core.page.Page;
-import com.hfhk.system.file.domain.*;
+import com.hfhk.system.file.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;

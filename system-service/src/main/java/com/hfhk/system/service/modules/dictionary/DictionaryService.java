@@ -4,10 +4,10 @@ import com.hfhk.cairo.core.Constants;
 import com.hfhk.cairo.core.exception.UnknownBusinessException;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.mongo.data.Metadata;
-import com.hfhk.system.dictionary.domain.Dictionary;
+import com.hfhk.system.dictionary.*;
+import com.hfhk.system.dictionary.Dictionary;
 import com.hfhk.system.service.constants.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.DictionaryMongo;
-import com.hfhk.system.service.modules.dictionary.domain.request.*;
 import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -19,11 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j(topic = "[dictionary]")
 @Service
@@ -263,10 +261,24 @@ public class DictionaryService {
 			.map(DictionaryConverter::mapper);
 	}
 
+
 	Criteria buildDictionaryFindParamCriteria(@NotNull String client, @Validated DictionaryFindParam param) {
 		Criteria criteria = Criteria.where(DictionaryMongo.FIELD.CLIENT).is(client);
-		Optional.ofNullable(param.getIds()).filter(x -> !x.isEmpty()).ifPresent(y -> criteria.and(DictionaryMongo.FIELD.CODE).in(y));
-		Optional.ofNullable(param.getKeyword()).ifPresent(y -> criteria.and(DictionaryMongo.FIELD.Name).regex(y));
+		Stream<Criteria> keywordCriteria = Optional.ofNullable(param.getKeyword()).map(y -> Criteria.where(DictionaryMongo.FIELD.Name).regex(y)).stream();
+		Stream<Criteria> itemsCriteria = Optional.ofNullable(param.getItems())
+			.orElse(Collections.emptySet())
+			.stream()
+			.filter(Objects::nonNull)
+			.filter(x -> x.getId() != null)
+			.map(i -> {
+					Criteria iCriteria = Criteria.where(DictionaryMongo.FIELD.CODE).is(i.getId());
+					Optional.ofNullable(i.getItemIds()).filter(x -> !x.isEmpty()).ifPresent(itemIds -> iCriteria.and(DictionaryMongo.FIELD.ITEMS.ID).is(itemIds));
+					Optional.ofNullable(i.getItemValues()).filter(x -> !x.isEmpty()).ifPresent(itemValues -> iCriteria.and(DictionaryMongo.FIELD.ITEMS.VALUE).is(itemValues));
+					return iCriteria;
+				}
+			);
+		criteria.orOperator(Stream.concat(keywordCriteria, itemsCriteria).filter(Objects::nonNull).toArray(Criteria[]::new));
+
 		return criteria;
 	}
 

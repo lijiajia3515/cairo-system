@@ -1,10 +1,10 @@
-package com.hfhk.system.service.modules.dictionary.domain.request;
+package com.hfhk.system.file;
 
 import com.hfhk.cairo.core.page.AbstractPage;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.util.Set;
+import java.io.Serializable;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -13,7 +13,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DictionaryFindParam extends AbstractPage<DictionaryFindParam> {
-	private Set<String> ids;
-	private String keyword;
+public class FileFindParam extends AbstractPage<FileFindParam> implements Serializable {
+
+	private String path;
+	private String filename;
 }

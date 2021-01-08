@@ -1,4 +1,4 @@
-package com.hfhk.system.service.modules.dictionary.domain.request;
+package com.hfhk.system.dictionary;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

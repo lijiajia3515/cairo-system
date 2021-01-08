@@ -1,6 +1,6 @@
 package com.hfhk.system.service.modules.dictionary;
 
-import com.hfhk.system.dictionary.domain.Dictionary;
+import com.hfhk.system.dictionary.Dictionary;
 import com.hfhk.system.service.domain.mongo.DictionaryMongo;
 
 import java.util.Collection;
