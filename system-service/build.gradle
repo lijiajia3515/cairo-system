@@ -42,7 +42,7 @@ dependencies {
   implementation "com.hfhk.cairo.starter:cairo-starter-mongo:${cairoVersion}"
   implementation "com.hfhk.cairo.starter:cairo-starter-service:${cairoVersion}"
 
-  // system
+  // domain
   implementation project(':system-domain')
 
 
