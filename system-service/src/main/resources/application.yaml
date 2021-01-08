@@ -66,7 +66,7 @@ spring:
         min-idle: 0
   cloud:
     consul:
-      host: ${hfhk.consul.host:localhost}
+      host: ${hfhk.consul.host:consul}
       port: ${hfhk.consul.port:8500}
       discovery:
         prefer-ip-address: true
@@ -94,8 +94,8 @@ security:
   oauth2:
     client:
       id: ${random.value}
-      client-id: ${hfhk.auth.client.id:hfhk_auth}
-      client-secret: ${hfhk.auth.client.id:hfhk_auth}
+      client-id: ${hfhk.auth.client.id:hfhk_system}
+      client-secret: ${hfhk.auth.client.id:hfhk_system}
       grant-type: client_credentials
       access-token-uri: http://${hfhk.auth.server:auth}/oauth2/token
 
