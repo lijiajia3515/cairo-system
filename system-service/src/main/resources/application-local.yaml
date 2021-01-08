@@ -27,4 +27,4 @@ hfhk:
       instance-group: hfhk
 
 server:
-  port: 10011
+  port: 10010

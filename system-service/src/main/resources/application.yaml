@@ -112,7 +112,7 @@ feign:
   client:
     default-to-properties: true
     config:
-      serviceAuthV1AuthenticationBasicClient:
+      serviceAuthV1AuthBasicClient:
         logger-level: FULL
         request-interceptors:
           - com.hfhk.cairo.feign.interceptor.BasicRequestInterceptor
