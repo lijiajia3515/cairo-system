@@ -1,3 +1,4 @@
+/*
 package com.hfhk.system.service.modules.minio;
 
 import io.minio.MinioClient;
@@ -16,3 +17,4 @@ public class A {
 		System.out.println("1");
 	}
 }
+*/
