@@ -7,9 +7,9 @@ apply from: "${rootDir}/gradle/devtools.gradle"
 dependencies {
   annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
   implementation "org.springframework.boot:spring-boot-starter"
-  // actuator
 
-  // implementation "org.springframework.boot:spring-boot-starter-actuator"
+  // actuator
+  implementation "org.springframework.boot:spring-boot-starter-actuator"
 
   // data
   implementation "org.springframework.boot:spring-boot-starter-data-mongodb"
