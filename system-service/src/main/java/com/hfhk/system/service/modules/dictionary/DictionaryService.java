@@ -224,7 +224,6 @@ public class DictionaryService {
 	public List<Dictionary> find(@NotNull String client, @Validated DictionaryFindParam param) {
 		Criteria criteria = buildDictionaryFindParamCriteria(client, param);
 		Query query = Query.query(criteria).with(defaultSort());
-
 		return mongoTemplate.find(query, DictionaryMongo.class, mongoProperties.COLLECTION.DICTIONARY)
 			.stream()
 			.filter(Objects::nonNull)
@@ -272,8 +271,8 @@ public class DictionaryService {
 			.filter(x -> x.getId() != null)
 			.map(i -> {
 					Criteria iCriteria = Criteria.where(DictionaryMongo.FIELD.CODE).is(i.getId());
-					Optional.ofNullable(i.getItemIds()).filter(x -> !x.isEmpty()).ifPresent(itemIds -> iCriteria.and(DictionaryMongo.FIELD.ITEMS.ID).is(itemIds));
-					Optional.ofNullable(i.getItemValues()).filter(x -> !x.isEmpty()).ifPresent(itemValues -> iCriteria.and(DictionaryMongo.FIELD.ITEMS.VALUE).is(itemValues));
+					Optional.ofNullable(i.getItemIds()).filter(x -> !x.isEmpty()).ifPresent(itemIds -> iCriteria.and(DictionaryMongo.FIELD.ITEMS.ID).in(itemIds));
+					Optional.ofNullable(i.getItemValues()).filter(x -> !x.isEmpty()).ifPresent(itemValues -> iCriteria.and(DictionaryMongo.FIELD.ITEMS.VALUE).in(itemValues));
 					return iCriteria;
 				}
 			);
