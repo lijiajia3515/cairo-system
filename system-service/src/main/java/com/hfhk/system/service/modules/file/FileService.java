@@ -130,12 +130,7 @@ public class FileService {
 	 * @return file list
 	 */
 	List<File> find(String client, FileFindParam param) {
-		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
-		Optional.ofNullable(param)
-			.ifPresent(x -> {
-				Optional.ofNullable(x.getPath()).ifPresent(y -> criteria.and(FileMongo.FIELD.PATH).regex(y));
-				Optional.ofNullable(x.getFilename()).ifPresent(y -> criteria.and(FileMongo.FIELD.FILENAME).regex(y));
-			});
+		Criteria criteria = buildCriteria(client, param);
 
 		Query query = Query.query(criteria);
 		List<FileMongo> contents = mongoTemplate.find(query, FileMongo.class, mongoProperties.COLLECTION.file());
@@ -152,10 +147,7 @@ public class FileService {
 	 * @return file list page
 	 */
 	Page<File> findPage(String client, FileFindParam param) {
-		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
-
-		Optional.ofNullable(param.getPath()).ifPresent(x -> criteria.and(FileMongo.FIELD.PATH).regex(x));
-		Optional.ofNullable(param.getFilename()).ifPresent(x -> criteria.and(FileMongo.FIELD.FILENAME).regex(x));
+		Criteria criteria = buildCriteria(client, param);
 		Query query = Query.query(criteria);
 		long total = mongoTemplate.count(query, FileMongo.class, mongoProperties.COLLECTION.file());
 		query.with(param.pageable());
@@ -175,6 +167,24 @@ public class FileService {
 			.stream()
 			.map(x -> FileConverter.fileMapper(x, userMap.get(x.getMetadata().getCreated().getUid()), userMap.get(x.getMetadata().getLastModified().getUid())))
 			.collect(Collectors.toList());
+	}
+
+	private Criteria buildCriteria(String client, FileFindParam param) {
+		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
+		Optional.of(param.getIds()).filter(x -> !x.isEmpty()).ifPresent(ids -> criteria.and(FileMongo.FIELD._ID).in(ids));
+		Optional.of(
+			Optional.of(param.getItems())
+				.filter(x -> !x.isEmpty())
+				.map(items -> items.stream()
+					.map(item -> Criteria
+						.where(FileMongo.FIELD.PATH).regex(item.getPath())
+						.and(FileMongo.FIELD.FILENAME).regex(item.getFilename()))
+					.toArray(Criteria[]::new))
+				.orElseGet(() -> new Criteria[]{})
+		)
+			.filter(x -> x.length > 0)
+			.ifPresent(criteria::orOperator);
+		return criteria;
 	}
 
 
