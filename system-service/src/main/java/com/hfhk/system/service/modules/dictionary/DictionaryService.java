@@ -276,7 +276,11 @@ public class DictionaryService {
 					return iCriteria;
 				}
 			);
-		criteria.orOperator(Stream.concat(keywordCriteria, itemsCriteria).filter(Objects::nonNull).toArray(Criteria[]::new));
+		Optional.of(Stream.concat(keywordCriteria, itemsCriteria)
+			.filter(Objects::nonNull)
+			.toArray(Criteria[]::new))
+			.filter(x -> x.length > 0)
+			.ifPresent(criteria::orOperator);
 
 		return criteria;
 	}
