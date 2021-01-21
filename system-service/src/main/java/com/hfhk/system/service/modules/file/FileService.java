@@ -173,7 +173,7 @@ public class FileService {
 		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
 		Optional.of(param.getIds()).filter(x -> !x.isEmpty()).ifPresent(ids -> criteria.and(FileMongo.FIELD._ID).in(ids));
 		Optional.of(
-			Optional.of(param.getItems())
+			Optional.ofNullable(param.getItems())
 				.filter(x -> !x.isEmpty())
 				.map(items -> items.stream()
 					.map(item -> Criteria

@@ -47,7 +47,7 @@ public class FileApi {
 	@PreAuthorize("isAuthenticated()")
 	public List<File> upload(@AuthenticationPrincipal AuthPrincipal principal,
 							 @RequestParam(name = "Path", defaultValue = FileConstant.TEMPORARY_FILE_PATH) String path,
-							 @RequestPart Collection<MultipartFile> files) {
+							 @RequestPart(name = "Files") Collection<MultipartFile> files) {
 		String client = principal.getClient();
 		return fileService.store(client, principal.getUser().getUid(), path, files);
 	}
@@ -61,7 +61,7 @@ public class FileApi {
 	@PostMapping("/UploadTemporary")
 	@PreAuthorize("isAuthenticated()")
 	public List<File> temporaryUpload(
-		@AuthenticationPrincipal AuthPrincipal principal, @RequestPart Collection<MultipartFile> files) {
+		@AuthenticationPrincipal AuthPrincipal principal, @RequestPart(name = "Files") Collection<MultipartFile> files) {
 		String client = principal.getClient();
 		String path = FileConstant.TEMPORARY_FILE_PATH.concat("/").concat(Constants.SNOWFLAKE.nextIdStr());
 		return fileService.store(client, FileConstant.ANONYMOUS_UID, path, files);
