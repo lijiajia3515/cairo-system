@@ -1,6 +1,6 @@
 package com.hfhk.system.file;
 
-import com.hfhk.auth.domain.Metadata;
+import com.hfhk.auth.Metadata;
 import com.hfhk.cairo.core.tree.TreeNode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
