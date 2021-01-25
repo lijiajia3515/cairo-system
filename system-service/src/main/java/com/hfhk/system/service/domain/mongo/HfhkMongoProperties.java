@@ -1,4 +1,4 @@
-package com.hfhk.system.service.constants;
+package com.hfhk.system.service.domain.mongo;
 
 import org.springframework.stereotype.Component;
 

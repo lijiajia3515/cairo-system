@@ -1,4 +1,4 @@
-package com.hfhk.system.dictionary;
+package com.hfhk.system.modules.dictionary;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

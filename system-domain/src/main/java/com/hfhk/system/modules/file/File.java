@@ -1,4 +1,4 @@
-package com.hfhk.system.file;
+package com.hfhk.system.modules.file;
 
 import com.hfhk.auth.Metadata;
 import lombok.AllArgsConstructor;

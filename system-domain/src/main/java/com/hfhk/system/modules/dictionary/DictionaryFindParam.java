@@ -1,10 +1,9 @@
-package com.hfhk.system.file;
+package com.hfhk.system.modules.dictionary;
 
 import com.hfhk.cairo.core.page.AbstractPage;
 import lombok.*;
 import lombok.experimental.Accessors;
 
-import java.io.Serializable;
 import java.util.Set;
 
 @Data
@@ -14,17 +13,18 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FileFindParam extends AbstractPage<FileFindParam> implements Serializable {
-	private Set<String> ids;
-	private Set<Item> items;
+public class DictionaryFindParam extends AbstractPage<DictionaryFindParam> {
+	private String keyword;
+	private Set<Dictionary> items;
 
 	@Data
 	@Accessors(chain = true)
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@Builder
-	public static class Item {
-		String path;
-		private String filename;
+	public static class Dictionary {
+		private String id;
+		private Set<String> itemIds;
+		private Set<Object> itemValues;
 	}
 }

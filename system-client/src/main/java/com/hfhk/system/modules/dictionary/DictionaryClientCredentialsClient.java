@@ -1,7 +1,7 @@
-package com.hfhk.system.client;
+package com.hfhk.system.modules.dictionary;
 
-import com.hfhk.system.dictionary.Dictionary;
-import com.hfhk.system.dictionary.DictionaryFindParam;
+import com.hfhk.system.modules.dictionary.Dictionary;
+import com.hfhk.system.modules.dictionary.DictionaryFindParam;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

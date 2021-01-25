@@ -1,4 +1,4 @@
-package com.hfhk.system.file;
+package com.hfhk.system.modules.file;
 
 import lombok.*;
 import lombok.experimental.Accessors;
