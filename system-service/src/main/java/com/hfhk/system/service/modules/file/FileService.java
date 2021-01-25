@@ -172,7 +172,7 @@ public class FileService {
 
 	private Criteria buildCriteria(String client, FileFindParam param) {
 		Criteria criteria = Criteria.where(FileMongo.FIELD.CLIENT).is(client);
-		Optional.of(param.getIds()).filter(x -> !x.isEmpty()).ifPresent(ids -> criteria.and(FileMongo.FIELD._ID).in(ids));
+		Optional.ofNullable(param.getIds()).filter(x -> !x.isEmpty()).ifPresent(ids -> criteria.and(FileMongo.FIELD._ID).in(ids));
 		Optional.of(
 			Optional.ofNullable(param.getItems())
 				.filter(x -> !x.isEmpty())
