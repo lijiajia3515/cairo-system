@@ -1,4 +1,4 @@
-package com.hfhk.system.modules.file;
+package com.hfhk.system.modules.file.client;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.system.modules.file.*;
@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "service-system-v1", path = "/File", contextId = "serviceSystemV1FileFileClientCredentialsClient")
-public interface FileClientCredentialsClient {
+@FeignClient(name = "service-system-v1", path = "/File", contextId = "serviceSystemV1-file-request-client")
+public interface FileRequestClient {
 
 	/**
 	 * 创建文件夹

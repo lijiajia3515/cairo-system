@@ -1,10 +1,9 @@
 package com.hfhk.system.service.modules.dictionary;
 
-import com.hfhk.cairo.core.Constants;
+import com.hfhk.cairo.core.CoreConstants;
 import com.hfhk.cairo.core.exception.UnknownBusinessException;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.mongo.data.Metadata;
-import com.hfhk.system.dictionary.*;
 import com.hfhk.system.modules.dictionary.*;
 import com.hfhk.system.modules.dictionary.Dictionary;
 import com.hfhk.system.service.domain.mongo.HfhkMongoProperties;
@@ -44,7 +43,7 @@ public class DictionaryService {
 	public Optional<Dictionary> save(@NotNull String client, @Validated DictionarySaveParam params) {
 		DictionaryMongo dictionaryMongo = DictionaryMongo.builder()
 			.client(client)
-			.code(Optional.ofNullable(params.getId()).orElse(Constants.SNOWFLAKE.nextIdStr()))
+			.code(Optional.ofNullable(params.getId()).orElse(CoreConstants.SNOWFLAKE.nextIdStr()))
 			.name(params.getName())
 			.items(
 				Optional.ofNullable(params.getItems())
@@ -52,10 +51,10 @@ public class DictionaryService {
 					.flatMap(Collection::stream)
 					.map(x ->
 						DictionaryMongo.Item.builder()
-							.id(Constants.SNOWFLAKE.nextIdStr())
-							.value(Optional.ofNullable(x.getValue()).orElse(Constants.SNOWFLAKE.nextIdStr()))
+							.id(CoreConstants.SNOWFLAKE.nextIdStr())
+							.value(Optional.ofNullable(x.getValue()).orElse(CoreConstants.SNOWFLAKE.nextIdStr()))
 							.name(x.getName())
-							.metadata(new Metadata().setSort(Constants.SNOWFLAKE.nextId()))
+							.metadata(new Metadata().setSort(CoreConstants.SNOWFLAKE.nextId()))
 							.build()
 					)
 					.collect(Collectors.toList())
@@ -79,10 +78,10 @@ public class DictionaryService {
 			.flatMap(Collection::stream)
 			.map(x ->
 				DictionaryMongo.Item.builder()
-					.id(Optional.ofNullable(x.getId()).orElse(Constants.SNOWFLAKE.nextIdStr()))
-					.value(Optional.ofNullable(x.getValue()).orElse(Constants.SNOWFLAKE.nextIdStr()))
+					.id(Optional.ofNullable(x.getId()).orElse(CoreConstants.SNOWFLAKE.nextIdStr()))
+					.value(Optional.ofNullable(x.getValue()).orElse(CoreConstants.SNOWFLAKE.nextIdStr()))
 					.name(x.getName())
-					.metadata(new Metadata().setSort(Constants.SNOWFLAKE.nextId()))
+					.metadata(new Metadata().setSort(CoreConstants.SNOWFLAKE.nextId()))
 					.build()
 			)
 			.collect(Collectors.toList());
@@ -137,10 +136,10 @@ public class DictionaryService {
 			.stream()
 			.flatMap(Collection::stream)
 			.map(x -> DictionaryMongo.Item.builder()
-				.id(Optional.ofNullable(x.getId()).orElse(Constants.SNOWFLAKE.nextIdStr()))
+				.id(Optional.ofNullable(x.getId()).orElse(CoreConstants.SNOWFLAKE.nextIdStr()))
 				.value(x.getValue())
 				.name(x.getName())
-				.metadata(new Metadata().setSort(Constants.SNOWFLAKE.nextId()))
+				.metadata(new Metadata().setSort(CoreConstants.SNOWFLAKE.nextId()))
 				.build())
 			.collect(Collectors.toList());
 

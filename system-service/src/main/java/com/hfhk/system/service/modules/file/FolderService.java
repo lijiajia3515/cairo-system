@@ -1,9 +1,8 @@
 package com.hfhk.system.service.modules.file;
 
-import com.hfhk.auth.client.UserClientCredentialsClient;
 import com.hfhk.auth.modules.user.User;
+import com.hfhk.auth.modules.user.UserClientCredentialsClient;
 import com.hfhk.cairo.core.page.Page;
-import com.hfhk.system.file.*;
 import com.hfhk.system.modules.file.*;
 import com.hfhk.system.service.domain.mongo.HfhkMongoProperties;
 import com.hfhk.system.service.domain.mongo.FolderMongo;

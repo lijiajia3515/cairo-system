@@ -1,13 +1,13 @@
 package com.hfhk.system.service.modules.file;
 
-import com.hfhk.cairo.core.Constants;
+
+import com.hfhk.cairo.core.CoreConstants;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class FolderUtil {
 	public static final String DELIMITER = FileConstant.DELIMITER;
@@ -30,6 +30,6 @@ public class FolderUtil {
 				String parentPath = filterPath.substring(0, filterPath.lastIndexOf(DELIMITER));
 				return parentPath.isEmpty() ? DELIMITER : parentPath;
 			})
-			.orElse(Constants.SNOWFLAKE.nextIdStr());
+			.orElse(CoreConstants.SNOWFLAKE.nextIdStr());
 	}
 }

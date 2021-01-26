@@ -1,4 +1,4 @@
-package com.hfhk.system.modules.dictionary;
+package com.hfhk.system.modules.dictionary.client;
 
 import com.hfhk.system.modules.dictionary.Dictionary;
 import com.hfhk.system.modules.dictionary.DictionaryFindParam;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "service-system-v1", path = "/Dictionary", contextId = "serviceSystemV1DictionaryClientCredentialsClient")
+@FeignClient(name = "service-system-v1", path = "/Dictionary", contextId = "serviceSystemV1-dictionary-clientCredentials-client")
 public interface DictionaryClientCredentialsClient {
 
 	@PostMapping("/Find")

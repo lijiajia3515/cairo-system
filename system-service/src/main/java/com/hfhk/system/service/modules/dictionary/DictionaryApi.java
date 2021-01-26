@@ -2,7 +2,6 @@ package com.hfhk.system.service.modules.dictionary;
 
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
-import com.hfhk.system.dictionary.*;
 import com.hfhk.system.modules.dictionary.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;

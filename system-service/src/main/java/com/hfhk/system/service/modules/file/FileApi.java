@@ -1,7 +1,7 @@
 package com.hfhk.system.service.modules.file;
 
 import cn.hutool.core.net.URLEncoder;
-import com.hfhk.cairo.core.Constants;
+import com.hfhk.cairo.core.CoreConstants;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.security.oauth2.user.AuthPrincipal;
 import com.hfhk.system.modules.file.File;
@@ -63,7 +63,7 @@ public class FileApi {
 	public List<File> temporaryUpload(
 		@AuthenticationPrincipal AuthPrincipal principal, @RequestPart(name = "Files") Collection<MultipartFile> files) {
 		String client = principal.getClient();
-		String path = FileConstant.TEMPORARY_FILE_PATH.concat("/").concat(Constants.SNOWFLAKE.nextIdStr());
+		String path = FileConstant.TEMPORARY_FILE_PATH.concat("/").concat(CoreConstants.SNOWFLAKE.nextIdStr());
 		return fileService.store(client, FileConstant.ANONYMOUS_UID, path, files);
 	}
 
