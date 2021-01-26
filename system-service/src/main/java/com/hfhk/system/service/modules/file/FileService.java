@@ -2,7 +2,7 @@ package com.hfhk.system.service.modules.file;
 
 
 import com.hfhk.auth.modules.user.User;
-import com.hfhk.auth.modules.user.UserClientCredentialsClient;
+import com.hfhk.auth.modules.user.client.UserClientCredentialsClient;
 import com.hfhk.cairo.core.exception.BusinessException;
 import com.hfhk.cairo.core.page.Page;
 import com.hfhk.cairo.mongo.data.Created;
