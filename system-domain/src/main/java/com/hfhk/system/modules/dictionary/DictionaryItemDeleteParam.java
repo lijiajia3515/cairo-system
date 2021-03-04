@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Collection;
 
 /**
- * dictionary save request
+ * dictionary delete request
  */
 @Data
 @Accessors(chain = true)

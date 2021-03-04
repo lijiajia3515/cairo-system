@@ -33,8 +33,7 @@ public class DictionaryApi {
 	 */
 	@PostMapping("/Save")
 	@PreAuthorize("isAuthenticated()")
-	public Optional<Dictionary> save(
-		@AuthenticationPrincipal AuthPrincipal principal,
+	public Optional<Dictionary> save(@AuthenticationPrincipal AuthPrincipal principal,
 		@RequestBody DictionarySaveParam request) {
 		String client = principal.getClient();
 		return dictionaryService.save(client, request);
@@ -49,8 +48,7 @@ public class DictionaryApi {
 	 */
 	@PutMapping("/Modify")
 	@PreAuthorize("isAuthenticated()")
-	public Optional<Dictionary> modify(
-		@AuthenticationPrincipal AuthPrincipal principal,
+	public Optional<Dictionary> modify(@AuthenticationPrincipal AuthPrincipal principal,
 		@RequestBody DictionarySaveParam request) {
 		String client = principal.getClient();
 		return dictionaryService.modify(client, request);
