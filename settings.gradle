@@ -1,4 +1,4 @@
-rootProject.name = 'system'
+rootProject.name = 'cairo-system'
 
 include 'system-domain'
 include 'system-service'
