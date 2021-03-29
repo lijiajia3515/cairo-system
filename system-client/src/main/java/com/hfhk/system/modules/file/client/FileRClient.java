@@ -43,7 +43,7 @@ public interface FileRClient {
 	 * @return folder tree list
 	 */
 	@GetMapping(path = "/Folder/Find/Tree")
-	List<Folder> treeFindFolder(@RequestBody FolderFindParam param);
+	List<Folder> findTreeFolder(@RequestBody FolderFindParam param);
 
 
 	//file
@@ -68,6 +68,6 @@ public interface FileRClient {
 	 * @return file list page
 	 */
 	@PostMapping(path = "/Find/Page")
-	Page<File> pageFindFile(@RequestBody FileFindParam param);
+	Page<File> findPageFile(@RequestBody FileFindParam param);
 
 }
