@@ -123,7 +123,7 @@ public class DictionaryApi {
 		return dictionaryService.find(client, param);
 	}
 
-	@PostMapping("/FindPage")
+	@PostMapping("/Find/Page")
 	@PreAuthorize("isAuthenticated()")
 	public Page<Dictionary> findPage(@AuthenticationPrincipal AuthPrincipal principal,
 									 @RequestBody DictionaryFindParam param) {
@@ -131,7 +131,7 @@ public class DictionaryApi {
 		return dictionaryService.findPage(client, param);
 	}
 
-	@GetMapping("/Find/{id}")
+	@GetMapping("/Find/Id/{id}")
 	@PreAuthorize("isAuthenticated()")
 	public Optional<Dictionary> findById(@AuthenticationPrincipal AuthPrincipal principal, @PathVariable String id) {
 		String client = principal.getClient();

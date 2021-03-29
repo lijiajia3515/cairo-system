@@ -47,14 +47,14 @@ public class FolderApi {
 		return folderService.findPage(client, param);
 	}
 
-	@PostMapping("/FindPage")
+	@PostMapping("/Find/Page")
 	@PreAuthorize("isAuthenticated()")
 	public Page<Folder> findPage(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderFindParam param) {
 		String client = principal.getClient();
 		return folderService.findPage(client, param);
 	}
 
-	@PostMapping("/FindTree")
+	@PostMapping("/Find/Tree")
 	@PreAuthorize("isAuthenticated()")
 	public List<Folder> treeFind(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FolderFindParam param) {
 		String client = principal.getClient();

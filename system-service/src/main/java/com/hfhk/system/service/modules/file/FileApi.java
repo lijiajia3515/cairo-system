@@ -102,7 +102,7 @@ public class FileApi {
 		return fileService.find(client, param);
 	}
 
-	@PostMapping("/FindPage")
+	@PostMapping("/Find/Page")
 	@PreAuthorize("isAuthenticated()")
 	public Page<File> findPage(@AuthenticationPrincipal AuthPrincipal principal, @RequestBody FileFindParam param) {
 		String client = principal.getClient();

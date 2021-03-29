@@ -42,22 +42,13 @@ public interface FileRClient {
 	 * @param param param
 	 * @return folder tree list
 	 */
-	@GetMapping(path = "/Folder/FindTree")
+	@GetMapping(path = "/Folder/Find/Tree")
 	List<Folder> treeFindFolder(@RequestBody FolderFindParam param);
 
 
 	//file
 	@PostMapping(path = "/Upload", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	List<File> uploadFile(@RequestParam(name = "Path", defaultValue = "/") String folderPath, @RequestPart(name = "Files") MultipartFile[] files);
-
-	/**
-	 * 文件 查询(分页)
-	 *
-	 * @param param param
-	 * @return file list page
-	 */
-	@PostMapping(path = "/FindPage")
-	Page<File> pageFindFile(@RequestBody FileFindParam param);
 
 
 	/**
@@ -68,5 +59,15 @@ public interface FileRClient {
 	 */
 	@PostMapping(path = "/Find")
 	List<File> findFile(@RequestBody FileFindParam param);
+
+
+	/**
+	 * 文件 查询(分页)
+	 *
+	 * @param param param
+	 * @return file list page
+	 */
+	@PostMapping(path = "/Find/Page")
+	Page<File> pageFindFile(@RequestBody FileFindParam param);
 
 }
