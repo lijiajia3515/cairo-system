@@ -1,6 +1,6 @@
 hfhk:
   auth:
-    server: auth.hfhksoft.com
+    server: auth2.hfhksoft.com
     client:
       id: hfhk_system
       secret: hfhk_system
@@ -15,10 +15,11 @@ hfhk:
     username: hfhk
     password: Hfhk.1320.
   redis:
-    database: 11
-    host: 192.168.30.21
+    database: 0
+    host: 192.168.30.22
     port: 6379
-    password: Hfhk.1320.
+    username: lijiajia3515
+    password: lijiajia3515
   consul:
     host: 192.168.30.22
     port: 8500

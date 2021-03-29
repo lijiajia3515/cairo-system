@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "service-system-v1", path = "/File", contextId = "serviceSystemV1-file-clientCredentials-client")
-public interface FileClientCredentialsClient {
+@FeignClient(contextId = "fileRClient", name = "${hfhk.service.system:service-system-v1}", path = "/File")
+public interface FileRClient {
 
 	/**
 	 * 创建文件夹
@@ -48,8 +48,7 @@ public interface FileClientCredentialsClient {
 
 	//file
 	@PostMapping(path = "/Upload", produces = {MediaType.APPLICATION_JSON_VALUE}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	List<File> uploadFile(@RequestParam(name = "Path", defaultValue = "/") String folderPath,
-						  @RequestPart(name = "Files") MultipartFile[] files);
+	List<File> uploadFile(@RequestParam(name = "Path", defaultValue = "/") String folderPath, @RequestPart(name = "Files") MultipartFile[] files);
 
 	/**
 	 * 文件 查询(分页)

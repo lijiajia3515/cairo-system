@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "service-system-v1", path = "/Dictionary", contextId = "serviceSystemV1-dictionary-clientCredentials-client")
-public interface DictionaryClientCredentialsClient {
+@FeignClient(contextId = "dictionaryClient", name = "${hfhk.service.system:service-system-v1}", path = "/Dictionary")
+public interface DictionaryClient {
 
 	@PostMapping("/Find")
 	List<Dictionary> find(@RequestBody DictionaryFindParam param);

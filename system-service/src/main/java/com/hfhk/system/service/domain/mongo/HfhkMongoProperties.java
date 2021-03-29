@@ -32,6 +32,7 @@ public class HfhkMongoProperties {
 
 		public final String DICTIONARY = collection("dictionaries");
 		public final String FOLDER = collection("folders");
+		public final String AREA = collection("area");
 
 		private String collection(String collection) {
 			return PREFIX.concat("_").concat(collection);

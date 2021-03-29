@@ -9,8 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "service-system-v1", path = "/File", contextId = "serviceSystemV1-file-request-client")
-public interface FileRequestClient {
+@FeignClient(contextId = "fileClient", name = "${hfhk.service.system:service-system-v1}", path = "/File")
+public interface FileClient {
 
 	/**
 	 * 创建文件夹
