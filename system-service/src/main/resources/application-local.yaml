@@ -29,3 +29,9 @@ hfhk:
 
 server:
   port: 10010
+
+minio:
+  bucket: hfhk
+  username: root
+  password: Hfhk.1320.
+  endpoint: http://minio.dev.hfhksoft.com

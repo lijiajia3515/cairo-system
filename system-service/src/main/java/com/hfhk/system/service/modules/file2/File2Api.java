@@ -1,10 +1,7 @@
 package com.hfhk.system.service.modules.file2;
 
 import io.minio.errors.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -19,14 +16,19 @@ public class File2Api {
 	public File2Api(File2Service file2Service) {
 		this.file2Service = file2Service;
 	}
-	
-	@GetMapping("/Upload/Url")
-	public String url(@RequestParam String object) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
-		return file2Service.getUploadObjectUrl(object);
+
+	@PostMapping("/Get/Url")
+	public List<String> getUrl(@RequestBody List<String> objects) {
+		return file2Service.getObjectUrl(objects);
 	}
 
-	@GetMapping("/Upload/TemporaryUrl")
-	public List<String> temporaryUrl(@RequestParam String filename) throws IOException, InvalidResponseException, InvalidKeyException, NoSuchAlgorithmException, ServerException, ErrorResponseException, XmlParserException, InsufficientDataException, InternalException {
-		return file2Service.getUploadTemporaryObjectUrl(filename);
+	@PostMapping("/Upload/Url")
+	public List<String> uploadUrl(@RequestBody List<String> objects) {
+		return file2Service.getUploadObjectUrl(objects);
+	}
+
+	@PostMapping("/Upload/TemporaryUrl")
+	public List<List<String>> temporaryUrl(@RequestParam(defaultValue = "1") Integer size) {
+		return file2Service.getUploadTemporaryObjectUrl(size);
 	}
 }
