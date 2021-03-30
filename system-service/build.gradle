@@ -48,7 +48,7 @@ dependencies {
   implementation project(':system-domain')
 
 
-  // implementation 'io.minio:minio:3.0.10'
+  implementation 'io.minio:minio:8.1.0'
 
   // test
   testImplementation('org.springframework.boot:spring-boot-starter-test')

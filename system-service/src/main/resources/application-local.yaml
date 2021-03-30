@@ -1,6 +1,6 @@
 hfhk:
   auth:
-    server: auth2.hfhksoft.com
+    server: auth.hfhksoft.com
     client:
       id: hfhk_system
       secret: hfhk_system
