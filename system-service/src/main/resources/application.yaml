@@ -89,6 +89,7 @@ logging:
     com.hfhk: debug
   file:
     name: /hfhk/system/service/logs/hfhk.log
+
 server:
   port: 80
   http2:
@@ -105,6 +106,12 @@ security:
       client-secret: ${hfhk.auth.client.id:hfhk_system}
       grant-type: client_credentials
       access-token-uri: http://${hfhk.auth.server:auth-server}/oauth2/token
+
+minio:
+  endpoint: ${hfhk.minio.endpoint:http://minio}
+  bucket: ${hfhk.minio.bucket:hfhk}
+  username: ${hfhk.minio.username:minio}
+  password: ${hfhk.minio.password:minio}
 
 feign:
   hystrix:

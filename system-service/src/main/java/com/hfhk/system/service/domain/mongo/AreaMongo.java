@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.util.List;
 
@@ -17,24 +19,28 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class AreaMongo {
+	@MongoId
+	private String _id;
+	@Field("id")
 	private String id;
 	private String parent;
 	private Integer level;
-	private String code;
-	private String parentCode;
 	private String name;
-	private List<String> codes;
+	private String traditional;
+	private String abbr;
+	private String pinyin;
+	private String zip;
+	private List<String> ids;
 	private List<String> names;
 
-	public static final Field FIELD = new Field();
+	public static final MongoField FIELD = new MongoField();
 
-	public static class Field extends AbstractUpperCamelCaseField {
+	public static class MongoField extends AbstractUpperCamelCaseField {
+		public final String ID = field("Id");
 		public final String PARENT = field("Parent");
 		public final String LEVEL = field("Level");
-		public final String CODE = field("Code");
-		public final String PARENT_CODE = field("ParentCode");
 		public final String Name = field("Name");
-		public final Array CODES = new Array(this, "Codes");
+		public final Array IDS = new Array(this, "Ids");
 		public final Array NAMES = new Array(this, "Names");
 		public final DictionaryMongo.Field.Items ITEMS = new DictionaryMongo.Field.Items(this, "Items");
 

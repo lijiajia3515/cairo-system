@@ -26,7 +26,7 @@ public class AreaService {
 
 	@Cacheable(cacheNames = "area:subs")
 	public List<AreaTree> subs(String id) {
-		return mongoTemplate.find(Query.query(Criteria.where(AreaMongo.FIELD.PARENT_CODE).is(id)), AreaMongo.class, properties.COLLECTION.AREA)
+		return mongoTemplate.find(Query.query(Criteria.where(AreaMongo.FIELD.PARENT).is(id)), AreaMongo.class, properties.COLLECTION.AREA)
 			.stream()
 			.map(AreaConverter::areaTree)
 			.collect(Collectors.toList());
@@ -34,7 +34,7 @@ public class AreaService {
 
 	@Cacheable(cacheNames = "area:id")
 	public Optional<Area> findById(String id) {
-		return Optional.ofNullable(mongoTemplate.findOne(Query.query(Criteria.where(AreaMongo.FIELD.CODE).is(id)), AreaMongo.class, properties.COLLECTION.AREA))
+		return Optional.ofNullable(mongoTemplate.findOne(Query.query(Criteria.where(AreaMongo.FIELD.ID).is(id)), AreaMongo.class, properties.COLLECTION.AREA))
 			.map(AreaConverter::area);
 	}
 }

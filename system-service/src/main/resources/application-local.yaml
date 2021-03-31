@@ -26,12 +26,13 @@ hfhk:
     discovery:
       instance-zone: local
       instance-group: local
+  minio:
+    endpoint: http://minio.dev.hfhksoft.com
+    bucket: hfhk
+    username: root
+    password: Hfhk.1320.
 
 server:
   port: 10010
 
-minio:
-  bucket: hfhk
-  username: root
-  password: Hfhk.1320.
-  endpoint: http://minio.dev.hfhksoft.com
+

@@ -20,5 +20,6 @@ public class MinioProperties {
 	private String endpoint;
 	private String username;
 	private String password;
+	@Builder.Default
 	private String bucket = "hfhk";
 }
